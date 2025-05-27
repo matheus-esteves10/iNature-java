@@ -12,9 +12,6 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "t_ntr_noticia")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Noticia {
 
     @Id
@@ -48,4 +45,74 @@ public class Noticia {
     @ManyToOne
     @JoinColumn(name = "cd_id_usuario", nullable = false)
     private Usuario usuario;
+
+
+    public Noticia() {
+    }
+
+    public Noticia(Long id, String titulo, LocalDate dataPublicacao, String resumo, String corpo, String imagemCapa, Usuario usuario) {
+        this.id = id;
+        this.titulo = titulo;
+        this.dataPublicacao = dataPublicacao;
+        this.resumo = resumo;
+        this.corpo = corpo;
+        this.imagemCapa = imagemCapa;
+        this.usuario = usuario;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public LocalDate getDataPublicacao() {
+        return dataPublicacao;
+    }
+
+    public void setDataPublicacao(LocalDate dataPublicacao) {
+        this.dataPublicacao = dataPublicacao;
+    }
+
+    public String getResumo() {
+        return resumo;
+    }
+
+    public void setResumo(String resumo) {
+        this.resumo = resumo;
+    }
+
+    public String getCorpo() {
+        return corpo;
+    }
+
+    public void setCorpo(String corpo) {
+        this.corpo = corpo;
+    }
+
+    public String getImagemCapa() {
+        return imagemCapa;
+    }
+
+    public void setImagemCapa(String imagemCapa) {
+        this.imagemCapa = imagemCapa;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
 }

@@ -6,12 +6,10 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 @Entity
 @Table(name = "t_ntr_localizacao")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Localizacao {
 
     @Id
@@ -37,4 +35,55 @@ public class Localizacao {
     @Size(max = 7, message = "O número deve ter no máximo 7 caracteres.")
     @Column(name = "nr_numero")
     private String numero;
+
+    public Localizacao() {
+    }
+
+    public Localizacao(Long id, String cidade, String bairro, String logradouro, String numero) {
+        this.id = id;
+        this.cidade = cidade;
+        this.bairro = bairro;
+        this.logradouro = logradouro;
+        this.numero = numero;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getCidade() {
+        return cidade;
+    }
+
+    public void setCidade(String cidade) {
+        this.cidade = cidade;
+    }
+
+    public String getBairro() {
+        return bairro;
+    }
+
+    public void setBairro(String bairro) {
+        this.bairro = bairro;
+    }
+
+    public String getLogradouro() {
+        return logradouro;
+    }
+
+    public void setLogradouro(String logradouro) {
+        this.logradouro = logradouro;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
 }

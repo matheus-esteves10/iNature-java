@@ -1,6 +1,6 @@
 package br.com.fiap.iNature.service;
 
-import br.com.fiap.iNature.model.Token;
+import br.com.fiap.iNature.dto.Token;
 import br.com.fiap.iNature.model.Usuario;
 import br.com.fiap.iNature.model.enums.Role;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -50,5 +50,17 @@ public class TokenService {
 
         return user;
     }
+
+    public String generateJwtToken(Usuario user) {
+        Instant expiresAt = LocalDateTime.now().plusDays(7).toInstant(ZoneOffset.ofHours(-3));
+
+        return JWT.create()
+                .withSubject(user.getId().toString())
+                .withClaim("nome", user.getNome())
+                .withClaim("role", user.getRole().toString())
+                .withExpiresAt(Date.from(expiresAt))
+                .sign(algorithm);
+    }
+
 }
 
