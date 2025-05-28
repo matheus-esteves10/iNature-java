@@ -3,7 +3,10 @@ package br.com.fiap.iNature.service;
 import br.com.fiap.iNature.dto.Token;
 import br.com.fiap.iNature.model.Usuario;
 import br.com.fiap.iNature.model.enums.Role;
+import br.com.fiap.iNature.repository.UserRepository;
 import com.auth0.jwt.algorithms.Algorithm;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -20,6 +23,11 @@ public class TokenService {
     private static final String SECRET = "secret";
 
     private final Algorithm algorithm = Algorithm.HMAC256(SECRET);
+
+    @Autowired
+    private UserRepository usuarioRepository;
+
+
 
     // Cria o token JWT e retorna o DTO Token (idUser, nome, role)
     public Token createToken(Usuario user) {
@@ -39,17 +47,12 @@ public class TokenService {
         var jwtVerified = JWT.require(algorithm).build().verify(jwt);
 
         Long id = Long.valueOf(jwtVerified.getSubject());
-        String nome = jwtVerified.getClaim("nome").asString();
-        String roleStr = jwtVerified.getClaim("role").asString();
-        Role role = Role.valueOf(roleStr);
 
-        Usuario user = new Usuario();
-        user.setId(id);
-        user.setNome(nome);
-        user.setRole(role);
 
-        return user;
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado no token"));
     }
+
 
     public String generateJwtToken(Usuario user) {
         Instant expiresAt = LocalDateTime.now().plusDays(7).toInstant(ZoneOffset.ofHours(-3));

@@ -1,5 +1,6 @@
 package br.com.fiap.iNature.infra.exception;
 
+import br.com.fiap.iNature.exceptions.AcessoNegadoException;
 import br.com.fiap.iNature.exceptions.UsuarioNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -81,6 +82,15 @@ public class ValidationHandler {
     public Map<String, String> usarnameNotFound(UsernameNotFoundException e) {
         Map<String, String> error = new HashMap<>();
         error.put("error", "Usuário não encontrado");
+        error.put("message", e.getMessage());
+        return error;
+    }
+
+    @ExceptionHandler(AcessoNegadoException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public Map<String, String> handleAcessoNegado(AcessoNegadoException e) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Acesso negado");
         error.put("message", e.getMessage());
         return error;
     }

@@ -64,26 +64,25 @@ public class UsuarioController {
         return ResponseEntity.ok(UsuarioResponseDto.from(usuario));
     }
 
-    @PutMapping("/{id}")
-    @Operation(summary = "Atualizar usuário por ID",
-            description = "Atualiza um usuário por ID.",
+    @PutMapping("/me")
+    @Operation(summary = "Atualizar usuário logado",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso", content = @Content(mediaType = "application/json")),
                     @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content(mediaType = "application/json"))})
-    public ResponseEntity<UsuarioResponseDto> atualizar(@PathVariable Long id, @RequestBody @Valid UsuarioDto dto) {
-        Usuario usuario = usuarioService.atualizar(id, dto);
+    public ResponseEntity<UsuarioResponseDto> atualizarMeuPerfil(@RequestBody @Valid UsuarioDto dto) {
+        Usuario usuario = usuarioService.atualizar(dto);
         return ResponseEntity.ok(UsuarioResponseDto.from(usuario));
     }
 
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Deletar usuário por ID",
-            description = "Deleta um usuário por ID.",
+    @DeleteMapping("/me")
+    @Operation(summary = "Deletar usuário logado",
             responses = {
                     @ApiResponse(responseCode = "204", description = "Usuário deletado com sucesso", content = @Content(mediaType = "application/json")),
                     @ApiResponse(responseCode = "404", description = "Usuário nao encontrado", content = @Content(mediaType = "application/json"))
             })
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        usuarioService.deletar(id);
+    public ResponseEntity<Void> deletarMeuPerfil() {
+        usuarioService.deletar();
         return ResponseEntity.noContent().build();
     }
+
 }
