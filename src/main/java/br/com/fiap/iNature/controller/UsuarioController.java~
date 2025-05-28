@@ -35,22 +35,6 @@ public class UsuarioController {
         return ResponseEntity.ok(UsuarioResponseDto.from(usuario));
     }
 
-    @GetMapping
-    @Operation(
-            summary = "Listar todos os usuários",
-            description = "Lista todos os usuários.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Lista de usuários", content = @Content(mediaType = "application/json"))
-            })
-
-    public ResponseEntity<List<UsuarioResponseDto>> listarTodos() {
-        List<UsuarioResponseDto> lista = usuarioService.listarTodos()
-                .stream()
-                .map(UsuarioResponseDto::from)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(lista);
-    }
-
     @GetMapping("/me")
     @Operation(
             summary = "Buscar usuário por ID",

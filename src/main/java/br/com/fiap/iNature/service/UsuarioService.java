@@ -2,6 +2,7 @@ package br.com.fiap.iNature.service;
 
 import br.com.fiap.iNature.dto.UsuarioDto;
 import br.com.fiap.iNature.exceptions.AcessoNegadoException;
+import br.com.fiap.iNature.exceptions.UsuarioNotFoundException;
 import br.com.fiap.iNature.model.Usuario;
 import br.com.fiap.iNature.model.enums.Role;
 import br.com.fiap.iNature.repository.UserRepository;
@@ -35,14 +36,15 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
-    public Usuario buscarPorId(Long id) {
-        return usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + id));
+    public Usuario buscarPorId() {
+        Long idLogado = getIdUsuarioLogado();
+        return usuarioRepository.findById(idLogado)
+                .orElseThrow(() -> new UsuarioNotFoundException("Usuário não encontrado"));
     }
 
     public Usuario atualizar(UsuarioDto dto) {
         Long idLogado = getIdUsuarioLogado();
-        Usuario usuario = buscarPorId(idLogado);
+        Usuario usuario = buscarPorId();
         usuario.setNome(dto.nome());
         usuario.setEmail(dto.email());
         usuario.setSenha(passwordEncoder.encode(dto.senha()));
@@ -51,7 +53,7 @@ public class UsuarioService {
 
     public void deletar() {
         Long idLogado = getIdUsuarioLogado();
-        Usuario usuario = buscarPorId(idLogado);
+        Usuario usuario = buscarPorId();
         usuarioRepository.delete(usuario);
     }
 
