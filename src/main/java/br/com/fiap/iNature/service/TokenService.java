@@ -42,12 +42,17 @@ public class TokenService {
 
         return Usuario.builder()
                 .id(Long.valueOf(jwtVerified.getSubject()))
-                .nome(jwtVerified.getClaim("nome").toString())
-                .email(jwtVerified.getClaim("email").toString())
+                .nome(jwtVerified.getClaim("nome").asString())
+                .email(jwtVerified.getClaim("email").asString())
                 .role(jwtVerified.getClaim("role").as(Role.class))
                 .build();
 
     }
+
+    public Usuario getUsuarioLogado(String token) {
+        return getUserFromToken(token.replace("Bearer ", ""));
+    }
+
 
 }
 

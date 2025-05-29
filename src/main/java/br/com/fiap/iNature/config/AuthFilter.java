@@ -19,33 +19,53 @@ public class AuthFilter extends OncePerRequestFilter {
     @Autowired
     private TokenService tokenService;
 
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         var header = request.getHeader("Authorization");
-        if(header == null){
-            filterChain.doFilter(request, response);
+
+        if (header == null || header.isBlank()) {
+            filterChain.doFilter(request, response); // se endpoint for público, pode seguir
             return;
         }
 
-        if(!header.startsWith("Bearer ")){
-            response.setStatus(401);
-            response.getWriter().write(""" 
-                {"message": "Header deve iniciar com Bearer"} 
+        if (!header.startsWith("Bearer ")) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("""
+                {"message": "Header deve iniciar com 'Bearer '"}
             """);
             return;
         }
 
         var jwt = header.replace("Bearer ", "");
 
-        var user = tokenService.getUserFromToken(jwt);
+        try {
+            var user = tokenService.getUserFromToken(jwt);
 
-        var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+            if (user == null) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write("""
+                    {"message": "Usuário não encontrado no token"}
+                """);
+                return;
+            }
 
-        filterChain.doFilter(request, response);
+            var authentication = new UsernamePasswordAuthenticationToken(
+                    user, null, user.getAuthorities());
 
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            filterChain.doFilter(request, response);
+
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("""
+                {"message": "Token inválido ou expirado"}
+            """);
+        }
     }
 }
+

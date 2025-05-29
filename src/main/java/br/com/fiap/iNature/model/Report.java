@@ -34,7 +34,7 @@ public class Report {
     @Column(name = "ds_corpo", nullable = false)
     private String corpo;
 
-    @NotBlank(message = "O tipo do report é obrigatório.")
+    @NotNull(message = "O tipo do report é obrigatório.")
     @Enumerated(EnumType.STRING)
     @Column(name = "ds_tipo_report", nullable = false)
     private TipoReport tipo;

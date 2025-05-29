@@ -39,16 +39,12 @@ public class UsuarioService {
     }
 
     public Usuario buscarPorId(String token) {
-        Long id = getUsuarioLogado(token);
-        return usuarioRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+        return tokenService.getUsuarioLogado(token);
     }
 
-    public Usuario atualizar(String token, UsuarioDto dto) {
-        Long id = getUsuarioLogado(token);
 
-        Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+    public Usuario atualizar(String token, UsuarioDto dto) {
+        Usuario usuario = tokenService.getUsuarioLogado(token);
 
         usuario.setNome(dto.nome());
         usuario.setEmail(dto.email());
@@ -57,21 +53,15 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
-    public void deletar(String token) {
-        Long id = getUsuarioLogado(token);
 
-        if (!usuarioRepository.existsById(id)) {
+    public void deletar(String token) {
+        Usuario usuario = tokenService.getUsuarioLogado(token);
+
+        if (!usuarioRepository.existsById(usuario.getId())) {
             throw new UsernameNotFoundException("Usuário não encontrado");
         }
 
-        usuarioRepository.deleteById(id);
+        usuarioRepository.deleteById(usuario.getId());
     }
-
-    private Long getUsuarioLogado(String token) {
-        Usuario usuario = tokenService.getUserFromToken(token.replace("Bearer ", ""));
-        return usuario.getId();
-    }
-
-
 
 }

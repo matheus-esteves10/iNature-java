@@ -5,6 +5,7 @@ import br.com.fiap.iNature.exceptions.UsuarioNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
@@ -94,4 +95,13 @@ public class ValidationHandler {
         error.put("message", e.getMessage());
         return error;
     }
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> EnumInválido(HttpMessageNotReadableException e) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Erro de desserialização");
+        error.put("message", e.getMessage());
+        return error;
+    }
+
 }

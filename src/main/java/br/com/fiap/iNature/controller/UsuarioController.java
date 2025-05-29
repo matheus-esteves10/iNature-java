@@ -7,6 +7,7 @@ import br.com.fiap.iNature.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-
+    @Transactional
     @PostMapping
     @Operation(summary = "Cadastrar novo usuário",
             description = "Cria um novo usuário com as informações fornecidas.",
@@ -64,6 +65,7 @@ public class UsuarioController {
         return ResponseEntity.ok(UsuarioResponseDto.from(usuario));
     }
 
+    @Transactional
     @PutMapping("/me")
     @Operation(summary = "Atualizar usuário logado",
             responses = {
@@ -76,6 +78,7 @@ public class UsuarioController {
         return ResponseEntity.ok(UsuarioResponseDto.from(usuario));
     }
 
+    @Transactional
     @DeleteMapping("/me")
     @Operation(summary = "Deletar usuário logado",
             responses = {
