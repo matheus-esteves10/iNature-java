@@ -1,5 +1,6 @@
 package br.com.fiap.iNature.model;
 
+import br.com.fiap.iNature.model.enums.TipoReport;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -8,10 +9,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "t_ntr_reports")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Report {
 
     @Id
@@ -30,9 +35,9 @@ public class Report {
     private String corpo;
 
     @NotBlank(message = "O tipo do report é obrigatório.")
-    @Size(max = 50, message = "O tipo do report deve ter no máximo 50 caracteres.")
+    @Enumerated(EnumType.STRING)
     @Column(name = "ds_tipo_report", nullable = false)
-    private String tipo;
+    private TipoReport tipo;
 
     @NotNull(message = "A data do report é obrigatória.")
     @Column(name = "dt_data_report", nullable = false)
@@ -48,72 +53,4 @@ public class Report {
     @JoinColumn(name = "cd_id_usuario", nullable = false)
     private Usuario usuario;
 
-    public Report() {
-    }
-
-    public Report(Long id, String titulo, String corpo, String tipo, LocalDate data, Localizacao localizacao, Usuario usuario) {
-        this.id = id;
-        this.titulo = titulo;
-        this.corpo = corpo;
-        this.tipo = tipo;
-        this.data = data;
-        this.localizacao = localizacao;
-        this.usuario = usuario;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitulo() {
-        return titulo;
-    }
-
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
-    }
-
-    public String getCorpo() {
-        return corpo;
-    }
-
-    public void setCorpo(String corpo) {
-        this.corpo = corpo;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
-    }
-
-    public LocalDate getData() {
-        return data;
-    }
-
-    public void setData(LocalDate data) {
-        this.data = data;
-    }
-
-    public Localizacao getLocalizacao() {
-        return localizacao;
-    }
-
-    public void setLocalizacao(Localizacao localizacao) {
-        this.localizacao = localizacao;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
 }

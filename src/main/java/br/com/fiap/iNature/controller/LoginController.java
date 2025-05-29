@@ -2,7 +2,6 @@ package br.com.fiap.iNature.controller;
 
 import br.com.fiap.iNature.dto.Credentials;
 import br.com.fiap.iNature.dto.Token;
-import br.com.fiap.iNature.dto.response.LoginResponse;
 import br.com.fiap.iNature.model.Usuario;
 import br.com.fiap.iNature.service.AuthService;
 import br.com.fiap.iNature.service.TokenService;
@@ -37,16 +36,16 @@ public class LoginController {
                     @ApiResponse(responseCode = "401", description = "Credenciais inválidas", content = @Content(mediaType = "application/json")),
                     @ApiResponse(responseCode = "404", description = "Username não encontrado", content = @Content(mediaType = "application/json"))
             })
-    public LoginResponse login(@RequestBody @Valid Credentials credentials){
+    public Token login(@RequestBody @Valid Credentials credentials) {
         Usuario user = (Usuario) authService.loadUserByUsername(credentials.username());
 
         if (!passwordEncoder.matches(credentials.password(), user.getSenha())) {
             throw new BadCredentialsException("Senha incorreta");
         }
 
-        String jwt = tokenService.generateJwtToken(user);
+        String jwt = tokenService.createToken(user);
 
-        return new LoginResponse(jwt);
+        return new Token(jwt);
     }
 
 }

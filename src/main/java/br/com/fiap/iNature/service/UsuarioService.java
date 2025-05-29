@@ -21,6 +21,8 @@ public class UsuarioService {
     private UserRepository usuarioRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private TokenService tokenService;
 
     // CREATE
     public Usuario salvar(UsuarioDto dto) {
@@ -36,42 +38,40 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
-    public Usuario buscarPorId() {
-        Long idLogado = getIdUsuarioLogado();
-        return usuarioRepository.findById(idLogado)
-                .orElseThrow(() -> new UsuarioNotFoundException("Usuário não encontrado"));
+    public Usuario buscarPorId(String token) {
+        Long id = getUsuarioLogado(token);
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
     }
 
-    public Usuario atualizar(UsuarioDto dto) {
-        Long idLogado = getIdUsuarioLogado();
-        Usuario usuario = buscarPorId();
+    public Usuario atualizar(String token, UsuarioDto dto) {
+        Long id = getUsuarioLogado(token);
+
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+
         usuario.setNome(dto.nome());
         usuario.setEmail(dto.email());
         usuario.setSenha(passwordEncoder.encode(dto.senha()));
+
         return usuarioRepository.save(usuario);
     }
 
-    public void deletar() {
-        Long idLogado = getIdUsuarioLogado();
-        Usuario usuario = buscarPorId();
-        usuarioRepository.delete(usuario);
-    }
+    public void deletar(String token) {
+        Long id = getUsuarioLogado(token);
 
-    private Long getIdUsuarioLogado() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        if (principal instanceof Usuario usuario) {
-            String email = usuario.getEmail();
-            if (email == null || email.isBlank()) {
-                throw new UsernameNotFoundException("Email do usuário autenticado está vazio ou nulo");
-            }
-            return usuarioRepository.findByEmail(email)
-                    .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com email: " + email))
-                    .getId();
+        if (!usuarioRepository.existsById(id)) {
+            throw new UsernameNotFoundException("Usuário não encontrado");
         }
 
-        throw new UsernameNotFoundException("Usuário autenticado não é uma instância de Usuario");
+        usuarioRepository.deleteById(id);
     }
+
+    private Long getUsuarioLogado(String token) {
+        Usuario usuario = tokenService.getUserFromToken(token.replace("Bearer ", ""));
+        return usuario.getId();
+    }
+
 
 
 }

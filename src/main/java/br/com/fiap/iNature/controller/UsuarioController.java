@@ -59,8 +59,8 @@ public class UsuarioController {
                     @ApiResponse(responseCode = "200", description = "Usuário encontrado", content = @Content(mediaType = "application/json")),
                     @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content(mediaType = "application/json"))
             })
-    public ResponseEntity<UsuarioResponseDto> buscarPorId() {
-        Usuario usuario = usuarioService.buscarPorId();
+    public ResponseEntity<UsuarioResponseDto> buscarPorId(@RequestHeader("Authorization") String authorizationHeader) {
+        Usuario usuario = usuarioService.buscarPorId(authorizationHeader);
         return ResponseEntity.ok(UsuarioResponseDto.from(usuario));
     }
 
@@ -69,8 +69,10 @@ public class UsuarioController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso", content = @Content(mediaType = "application/json")),
                     @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content(mediaType = "application/json"))})
-    public ResponseEntity<UsuarioResponseDto> atualizarMeuPerfil(@RequestBody @Valid UsuarioDto dto) {
-        Usuario usuario = usuarioService.atualizar(dto);
+    public ResponseEntity<UsuarioResponseDto> atualizarMeuPerfil(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestBody @Valid UsuarioDto dto) {
+        Usuario usuario = usuarioService.atualizar(authorizationHeader, dto);
         return ResponseEntity.ok(UsuarioResponseDto.from(usuario));
     }
 
@@ -80,8 +82,8 @@ public class UsuarioController {
                     @ApiResponse(responseCode = "204", description = "Usuário deletado com sucesso", content = @Content(mediaType = "application/json")),
                     @ApiResponse(responseCode = "404", description = "Usuário nao encontrado", content = @Content(mediaType = "application/json"))
             })
-    public ResponseEntity<Void> deletarMeuPerfil() {
-        usuarioService.deletar();
+    public ResponseEntity<Void> deletarMeuPerfil(@RequestHeader("Authorization") String authorizationHeader) {
+        usuarioService.deletar(authorizationHeader);
         return ResponseEntity.noContent().build();
     }
 
