@@ -34,7 +34,8 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers(HttpMethod.POST, "/users/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login/**").permitAll()
-                        .anyRequest().authenticated() // aqui está a proteção
+                        .requestMatchers(HttpMethod.GET, "/reports/confirmacoes/**").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(Customizer.withDefaults())

@@ -24,6 +24,9 @@ public class TokenService {
 
     private final Algorithm algorithm = Algorithm.HMAC256(SECRET);
 
+    @Autowired
+    private UserRepository usuarioRepository;
+
     public String createToken(Usuario user) {
         Instant expiresAt = LocalDateTime.now().plusDays(7).toInstant(ZoneOffset.ofHours(-3));
 
@@ -39,15 +42,12 @@ public class TokenService {
 
     public Usuario getUserFromToken(String jwt) {
         var jwtVerified = JWT.require(algorithm).build().verify(jwt);
+        Long userId = Long.valueOf(jwtVerified.getSubject());
 
-        return Usuario.builder()
-                .id(Long.valueOf(jwtVerified.getSubject()))
-                .nome(jwtVerified.getClaim("nome").asString())
-                .email(jwtVerified.getClaim("email").asString())
-                .role(jwtVerified.getClaim("role").as(Role.class))
-                .build();
-
+        return usuarioRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado no banco"));
     }
+
 
     public Usuario getUsuarioLogado(String token) {
         return getUserFromToken(token.replace("Bearer ", ""));

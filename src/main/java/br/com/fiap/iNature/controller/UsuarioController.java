@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +34,7 @@ public class UsuarioController {
             })
     public ResponseEntity<UsuarioResponseDto> criar(@RequestBody @Valid UsuarioDto dto) {
         Usuario usuario = usuarioService.salvar(dto);
-        return ResponseEntity.ok(UsuarioResponseDto.from(usuario));
+        return ResponseEntity.status(HttpStatus.CREATED).body(UsuarioResponseDto.from(usuario));
     }
 
     @GetMapping

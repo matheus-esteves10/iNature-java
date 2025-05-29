@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/reports")
 public class ReportController {
@@ -34,7 +36,26 @@ public class ReportController {
             @RequestHeader("Authorization") String token,
             @RequestBody @Valid ReportDto dto
     ) {
+
         Report report = reportService.criarReport(token, dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseReportDto.from(report));
     }
+
+    @PostMapping("/{id}/confirmacao")
+    public ResponseEntity<?> confirmarReport(@RequestHeader("Authorization") String token,
+                                             @PathVariable("id") Long reportId) {
+
+        reportService.confirmarReport(token, reportId);
+        return ResponseEntity.ok().build();
+
+    }
+
+    @GetMapping("/confirmacoes/{id}")
+    public ResponseEntity<Map<String, Long>> getQuantidadeConfirmacoes(@PathVariable("id") Long reportId) {
+
+        long total = reportService.getQuantidadeConfirmacoes(reportId);
+        return ResponseEntity.ok(Map.of("quantidadeConfirmacoes", total));
+    }
+
+
 }

@@ -1,6 +1,7 @@
 package br.com.fiap.iNature.infra.exception;
 
-import br.com.fiap.iNature.exceptions.AcessoNegadoException;
+import br.com.fiap.iNature.exceptions.ReportAlreadyConfirmedException;
+import br.com.fiap.iNature.exceptions.ReportNotFoundException;
 import br.com.fiap.iNature.exceptions.UsuarioNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -87,21 +88,32 @@ public class ValidationHandler {
         return error;
     }
 
-    @ExceptionHandler(AcessoNegadoException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public Map<String, String> handleAcessoNegado(AcessoNegadoException e) {
-        Map<String, String> error = new HashMap<>();
-        error.put("error", "Acesso negado");
-        error.put("message", e.getMessage());
-        return error;
-    }
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> EnumInválido(HttpMessageNotReadableException e) {
+    public Map<String, String> enumInválido(HttpMessageNotReadableException e) {
         Map<String, String> error = new HashMap<>();
         error.put("error", "Erro de desserialização");
         error.put("message", e.getMessage());
         return error;
     }
+
+    @ExceptionHandler(ReportNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> reportNotFound(ReportNotFoundException e) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "O report informado não foi encontrado");
+        error.put("message", e.getMessage());
+        return error;
+    }
+    @ExceptionHandler(ReportAlreadyConfirmedException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String reportAlreadyConfirmed(ReportAlreadyConfirmedException e) {
+        String error = "error: O usuário informado ja confirmou o report";
+        return error;
+    }
+
+
+
+
 
 }
