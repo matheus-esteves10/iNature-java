@@ -50,6 +50,13 @@ public class ReportController {
 
     }
 
+    @DeleteMapping("/{id}/remocao")
+    public ResponseEntity<Void> removerConfirmacao(@RequestHeader("Authorization") String token,
+                                                   @PathVariable Long id) {
+        reportService.removerConfirmacaoReport(token, id);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/confirmacoes/{id}")
     public ResponseEntity<Map<String, Long>> getQuantidadeConfirmacoes(@PathVariable("id") Long reportId) {
 

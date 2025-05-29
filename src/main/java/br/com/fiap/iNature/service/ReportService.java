@@ -51,16 +51,8 @@ public class ReportService {
         report.setLocalizacao(local);
         report.setUsuario(usuario);
 
-        Report reportSalvo = reportRepository.save(report);
 
-
-        ConfirmacaoReportId confirmacaoId = new ConfirmacaoReportId(reportSalvo.getId(), usuario.getId());
-
-        if (confirmacaoRepository.findById(confirmacaoId).isEmpty()) {
-            criaConfirmacaoReport(confirmacaoId, reportSalvo, usuario);
-        }
-
-        return reportSalvo;
+        return reportRepository.save(report);
     }
 
     @Transactional
@@ -82,6 +74,18 @@ public class ReportService {
         criaConfirmacaoReport(new ConfirmacaoReportId(reportId, usuario.getId()), report, usuario);
     }
 
+
+    @Transactional
+    public void removerConfirmacaoReport(String token, Long reportId) {
+        Usuario usuario = tokenService.getUsuarioLogado(token);
+
+        ConfirmacaoReportId confirmacaoId = new ConfirmacaoReportId(reportId, usuario.getId());
+
+        ConfirmacaoReport confirmacao = confirmacaoRepository.findById(confirmacaoId)
+                .orElseThrow(() -> new EntityNotFoundException("Confirmação não encontrada para esse usuário e report"));
+
+        confirmacaoRepository.delete(confirmacao);
+    }
 
     public long getQuantidadeConfirmacoes(Long reportId) {
         if (!reportRepository.existsById(reportId)) {
