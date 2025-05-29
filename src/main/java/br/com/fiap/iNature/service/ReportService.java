@@ -1,6 +1,7 @@
 package br.com.fiap.iNature.service;
 
 import br.com.fiap.iNature.dto.ReportDto;
+import br.com.fiap.iNature.dto.response.ResponseReportDto;
 import br.com.fiap.iNature.exceptions.ReportAlreadyConfirmedException;
 import br.com.fiap.iNature.exceptions.ReportNotFoundException;
 import br.com.fiap.iNature.model.*;
@@ -10,6 +11,8 @@ import br.com.fiap.iNature.repository.ReportRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -104,5 +107,19 @@ public class ReportService {
 
         confirmacaoRepository.save(confirmacao);
     }
+
+    public Page<ResponseReportDto> getReportsDoDiaMaisConfirmados(Pageable pageable) {
+        LocalDate hoje = LocalDate.now(ZoneId.of("America/Sao_Paulo"));
+        Page<Report> reports = reportRepository.findReportsDoDiaOrderByConfirmacoesDesc(hoje, pageable);
+        return reports.map(ResponseReportDto::from);
+    }
+
+    public Page<ResponseReportDto> getReportsPorBairro(String bairro, Pageable pageable) {
+        Page<Report> reports = reportRepository.findByBairroContainingIgnoreCaseOrderByDataDesc(bairro, pageable);
+        return reports.map(ResponseReportDto::from);
+    }
+
+
+
 
 }

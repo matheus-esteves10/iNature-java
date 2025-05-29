@@ -63,7 +63,7 @@ public class AuthFilter extends OncePerRequestFilter {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("""
-                {"message": "Token inválido ou expirado"}
+                {"message": "Token invalido ou expirado"}
             """);
         }
     }

@@ -13,7 +13,8 @@ public record ResponseReportDto(
         TipoReport tipo,
         LocalDate data,
         String usuarioNome,
-        LocalizacaoDto localizacao
+        LocalizacaoDto localizacao,
+        int quantidadeConfirmacoes
 ) {
 
     public static ResponseReportDto from(Report report) {
@@ -24,7 +25,8 @@ public record ResponseReportDto(
                 report.getTipo(),
                 report.getData(),
                 report.getUsuario().getNome(),
-                LocalizacaoDto.from(report.getLocalizacao())
+                LocalizacaoDto.from(report.getLocalizacao()),
+                report.getConfirmacoes().size()
         );
     }
 }

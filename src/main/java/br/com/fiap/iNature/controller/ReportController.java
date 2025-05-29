@@ -9,6 +9,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -64,5 +67,24 @@ public class ReportController {
         return ResponseEntity.ok(Map.of("quantidadeConfirmacoes", total));
     }
 
+    @GetMapping("/hoje")
+    public ResponseEntity<Page<ResponseReportDto>> listarReportsDeHoje(@RequestParam(defaultValue = "0") int page,
+                                                                       @RequestParam(defaultValue = "12") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ResponseReportDto> reports = reportService.getReportsDoDiaMaisConfirmados(pageable);
+        return ResponseEntity.ok(reports);
+    }
+
+    @GetMapping("/bairro")
+    public ResponseEntity<Page<ResponseReportDto>> listarReportsPorBairro(
+            @RequestParam String bairro,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ResponseReportDto> reports = reportService.getReportsPorBairro(bairro, pageable);
+        return ResponseEntity.ok(reports);
+    }
 
 }

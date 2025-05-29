@@ -74,7 +74,7 @@ public class ValidationHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public Map<String, String> handleBadCredentials(BadCredentialsException e) {
         Map<String, String> error = new HashMap<>();
-        error.put("error", "Credenciais inválidas");
+        error.put("error", "Credenciais invalidas");
         error.put("message", e.getMessage());
         return error;
     }
