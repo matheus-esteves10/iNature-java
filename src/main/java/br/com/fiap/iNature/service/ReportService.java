@@ -1,7 +1,9 @@
 package br.com.fiap.iNature.service;
 
 import br.com.fiap.iNature.dto.ReportDto;
+import br.com.fiap.iNature.dto.ReportMapper;
 import br.com.fiap.iNature.dto.response.ResponseReportDto;
+import br.com.fiap.iNature.exceptions.ConfirmacaoNotFoundException;
 import br.com.fiap.iNature.exceptions.ReportAlreadyConfirmedException;
 import br.com.fiap.iNature.exceptions.ReportNotFoundException;
 import br.com.fiap.iNature.model.*;
@@ -37,75 +39,45 @@ public class ReportService {
     public Report criarReport(String token, ReportDto dto) {
         Usuario usuario = tokenService.getUsuarioLogado(token);
 
-        var local = Localizacao.builder()
-                .cidade(dto.localizacao().cidade())
-                .bairro(dto.localizacao().bairro())
-                .logradouro(dto.localizacao().logradouro())
-                .numero(dto.localizacao().numero())
-                .build();
+        var local = ReportMapper.toLocalizacao(dto.localizacao());
 
         localizacaoRepository.save(local);
 
-        Report report = new Report();
-        report.setTitulo(dto.titulo());
-        report.setCorpo(dto.corpo());
-        report.setTipo(dto.tipoReport());
-        report.setData(LocalDate.now(ZoneId.of("America/Sao_Paulo")));
-        report.setLocalizacao(local);
-        report.setUsuario(usuario);
-
+        var report = ReportMapper.toReport(dto, usuario, local);
 
         return reportRepository.save(report);
     }
 
     @Transactional
     public void confirmarReport(String token, Long reportId) {
-        Usuario usuario = tokenService.getUsuarioLogado(token);
-
-        Report report = reportRepository.findById(reportId)
-                .orElseThrow(ReportNotFoundException::new);
-
-        // Verifica se já confirmou
-        Optional<ConfirmacaoReport> confirmacaoExistente = confirmacaoRepository.findById(
-                new ConfirmacaoReportId(reportId, usuario.getId())
-        );
-
-        if (confirmacaoExistente.isPresent()) {
-            throw new ReportAlreadyConfirmedException();
-        }
-
-        criaConfirmacaoReport(new ConfirmacaoReportId(reportId, usuario.getId()), report, usuario);
-    }
-
-
-    @Transactional
-    public void removerConfirmacaoReport(String token, Long reportId) {
-        Usuario usuario = tokenService.getUsuarioLogado(token);
+        Usuario usuario = getUsuarioLogado(token);
+        Report report = getReportOrThrow(reportId);
 
         ConfirmacaoReportId confirmacaoId = new ConfirmacaoReportId(reportId, usuario.getId());
 
+        if (confirmacaoRepository.existsById(confirmacaoId)) {
+            throw new ReportAlreadyConfirmedException();
+        }
+
+        criaConfirmacaoReport(confirmacaoId, report, usuario);
+    }
+
+    @Transactional
+    public void removerConfirmacaoReport(String token, Long reportId) {
+        ConfirmacaoReportId confirmacaoId = getConfirmacaoId(token, reportId);
+
         ConfirmacaoReport confirmacao = confirmacaoRepository.findById(confirmacaoId)
-                .orElseThrow(() -> new EntityNotFoundException("Confirmação não encontrada para esse usuário e report"));
+                .orElseThrow(ConfirmacaoNotFoundException::new);
 
         confirmacaoRepository.delete(confirmacao);
     }
 
     public long getQuantidadeConfirmacoes(Long reportId) {
         if (!reportRepository.existsById(reportId)) {
-            throw new EntityNotFoundException("Report não encontrado com id: " + reportId);
+            throw new ReportNotFoundException(reportId);
         }
 
         return confirmacaoRepository.countByReportId(reportId);
-    }
-
-    private void criaConfirmacaoReport(ConfirmacaoReportId reportId, Report report, Usuario usuario) {
-        ConfirmacaoReport confirmacao = new ConfirmacaoReport();
-        confirmacao.setId(reportId);
-        confirmacao.setReport(report);
-        confirmacao.setUsuario(usuario);
-        confirmacao.setDataConfirmacao(LocalDate.now());
-
-        confirmacaoRepository.save(confirmacao);
     }
 
     public Page<ResponseReportDto> getReportsDoDiaMaisConfirmados(Pageable pageable) {
@@ -119,7 +91,33 @@ public class ReportService {
         return reports.map(ResponseReportDto::from);
     }
 
+    // Auxiliares
 
+    private void criaConfirmacaoReport(ConfirmacaoReportId reportId, Report report, Usuario usuario) {
+        ConfirmacaoReport confirmacao = new ConfirmacaoReport();
+        confirmacao.setId(reportId);
+        confirmacao.setReport(report);
+        confirmacao.setUsuario(usuario);
+        confirmacao.setDataConfirmacao(LocalDate.now());
 
+        confirmacaoRepository.save(confirmacao);
+    }
+
+    private Usuario getUsuarioLogado(String token) {
+        return tokenService.getUsuarioLogado(token);
+    }
+
+    private Report getReportOrThrow(Long id) {
+        return reportRepository.findById(id)
+                .orElseThrow(() -> new ReportNotFoundException(id));
+    }
+
+    private ConfirmacaoReportId getConfirmacaoId(String token, Long reportId) {
+        Usuario usuario = getUsuarioLogado(token);
+        return new ConfirmacaoReportId(reportId, usuario.getId());
+    }
 
 }
+
+
+

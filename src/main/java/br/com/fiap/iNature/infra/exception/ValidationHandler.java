@@ -99,13 +99,13 @@ public class ValidationHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> reportNotFound(ReportNotFoundException e) {
         Map<String, String> error = new HashMap<>();
-        error.put("error", "O report informado não foi encontrado");
+        error.put("error", e.getClass().getSimpleName());
         error.put("message", e.getMessage());
         return error;
     }
 
     @ExceptionHandler(RoleNotPermitedException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     public Map<String, String> roleNotPermited(RoleNotPermitedException e) {
         Map<String, String> error = new HashMap<>();
         error.put("error", e.getClass().getSimpleName());
@@ -121,15 +121,19 @@ public class ValidationHandler {
         error.put("message", "Usuário sem permissão de jornalista");
         return error;
     }
-    @ExceptionHandler(ReportAlreadyConfirmedException.class)
+    @ExceptionHandler(ConfirmacaoNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> confirmacaoNotFound(ConfirmacaoNotFoundException e) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", e.getClass().getSimpleName());
+        error.put("message", "O usuário não tem confirmação para ser removida");
+        return error;
+    }
+    @ExceptionHandler(ReportAlreadyConfirmedException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public String reportAlreadyConfirmed(ReportAlreadyConfirmedException e) {
         String error = "error: O usuário informado ja confirmou o report";
         return error;
     }
-
-
-
-
 
 }

@@ -27,7 +27,7 @@ public class SupabaseStorageService {
     }
 
     public Mono<String> uploadFile(MultipartFile file, String fileName) throws IOException {
-        // URL para upload (não pública)
+
         String uploadUrl = String.format("%s/storage/v1/object/%s/%s", supabaseUrl, supabaseBucket, fileName);
 
         return webClient.put()

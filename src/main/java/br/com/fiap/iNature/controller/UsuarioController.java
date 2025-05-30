@@ -24,27 +24,23 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-    @Transactional
-    @PostMapping
     @Operation(summary = "Cadastrar novo usuário",
-            description = "Cria um novo usuário com as informações fornecidas.",
             responses = {
                     @ApiResponse(responseCode = "201", description = "Operador criado com sucesso", content = @Content(mediaType = "application/json")),
                     @ApiResponse(responseCode = "400", description = "Requisição inválida", content = @Content(mediaType = "application/json")),
             })
+    @PostMapping
     public ResponseEntity<UsuarioResponseDto> criar(@RequestBody @Valid UsuarioDto dto) {
         Usuario usuario = usuarioService.salvar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(UsuarioResponseDto.from(usuario));
     }
 
-    @GetMapping
     @Operation(
             summary = "Listar todos os usuários",
-            description = "Lista todos os usuários.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Lista de usuários", content = @Content(mediaType = "application/json"))
             })
-
+    @GetMapping
     public ResponseEntity<List<UsuarioResponseDto>> listarTodos() {
         List<UsuarioResponseDto> lista = usuarioService.listarTodos()
                 .stream()
@@ -53,25 +49,23 @@ public class UsuarioController {
         return ResponseEntity.ok(lista);
     }
 
-    @GetMapping("/me")
     @Operation(
             summary = "Buscar usuário por ID",
-            description = "Busca um usuário por ID.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Usuário encontrado", content = @Content(mediaType = "application/json")),
                     @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content(mediaType = "application/json"))
             })
+    @GetMapping("/me")
     public ResponseEntity<UsuarioResponseDto> buscarPorId(@RequestHeader("Authorization") String authorizationHeader) {
         Usuario usuario = usuarioService.buscarPorId(authorizationHeader);
         return ResponseEntity.ok(UsuarioResponseDto.from(usuario));
     }
 
-    @Transactional
-    @PutMapping("/me")
     @Operation(summary = "Atualizar usuário logado",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso", content = @Content(mediaType = "application/json")),
                     @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content(mediaType = "application/json"))})
+    @PutMapping("/me")
     public ResponseEntity<UsuarioResponseDto> atualizarMeuPerfil(
             @RequestHeader("Authorization") String authorizationHeader,
             @RequestBody @Valid UsuarioDto dto) {
@@ -79,13 +73,13 @@ public class UsuarioController {
         return ResponseEntity.ok(UsuarioResponseDto.from(usuario));
     }
 
-    @Transactional
-    @DeleteMapping("/me")
+
     @Operation(summary = "Deletar usuário logado",
             responses = {
                     @ApiResponse(responseCode = "204", description = "Usuário deletado com sucesso", content = @Content(mediaType = "application/json")),
                     @ApiResponse(responseCode = "404", description = "Usuário nao encontrado", content = @Content(mediaType = "application/json"))
             })
+    @DeleteMapping("/me")
     public ResponseEntity<Void> deletarMeuPerfil(@RequestHeader("Authorization") String authorizationHeader) {
         usuarioService.deletar(authorizationHeader);
         return ResponseEntity.noContent().build();

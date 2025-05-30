@@ -4,6 +4,7 @@ import br.com.fiap.iNature.dto.UsuarioDto;
 import br.com.fiap.iNature.model.Usuario;
 import br.com.fiap.iNature.model.enums.Role;
 import br.com.fiap.iNature.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,7 +22,8 @@ public class UsuarioService {
     @Autowired
     private TokenService tokenService;
 
-    // CREATE
+
+    @Transactional
     public Usuario salvar(UsuarioDto dto) {
         Usuario usuario = new Usuario();
         usuario.setNome(dto.nome());
@@ -40,6 +42,7 @@ public class UsuarioService {
     }
 
 
+    @Transactional
     public Usuario atualizar(String token, UsuarioDto dto) {
 
         Usuario usuario = tokenService.getUsuarioLogado(token);
@@ -51,13 +54,10 @@ public class UsuarioService {
     }
 
 
+    @Transactional
     public void deletar(String token) {
 
         Usuario usuario = tokenService.getUsuarioLogado(token);
-
-        if (!usuarioRepository.existsById(usuario.getId())) {
-            throw new UsernameNotFoundException("Usuário não encontrado");
-        }
 
         usuarioRepository.deleteById(usuario.getId());
     }

@@ -1,7 +1,8 @@
 package br.com.fiap.iNature.service;
 
 import br.com.fiap.iNature.dto.NoticiaDto;
-import br.com.fiap.iNature.dto.response.NoticiaIdResponse;
+import br.com.fiap.iNature.dto.response.NoticiaSelecionadaResponse;
+import br.com.fiap.iNature.dto.response.NoticiaMapper;
 import br.com.fiap.iNature.dto.response.NoticiaResponseDto;
 import br.com.fiap.iNature.exceptions.NoticiaNotFoundException;
 import br.com.fiap.iNature.exceptions.RoleNotPermitedException;
@@ -9,15 +10,14 @@ import br.com.fiap.iNature.model.Noticia;
 import br.com.fiap.iNature.model.Usuario;
 import br.com.fiap.iNature.model.enums.Role;
 import br.com.fiap.iNature.repository.NoticiaRepository;
-import br.com.fiap.iNature.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.UUID;
@@ -30,8 +30,6 @@ public class NoticiaService {
     @Autowired
     private SupabaseStorageService supabaseStorageService;
     @Autowired
-    private UserRepository usuarioRepository;
-    @Autowired
     private TokenService tokenService;
 
     @Transactional
@@ -42,8 +40,7 @@ public class NoticiaService {
             throw new RoleNotPermitedException();
         }
 
-        String nomeImagem = UUID.randomUUID() + "_" + dto.imagem().getOriginalFilename();
-        String urlImagem = supabaseStorageService.uploadFile(dto.imagem(), nomeImagem).block();
+        String urlImagem = salvarImagem(dto.imagem());
 
         Noticia noticia = new Noticia();
         noticia.setTitulo(dto.titulo());
@@ -55,41 +52,25 @@ public class NoticiaService {
 
         noticiaRepository.save(noticia);
 
-        return new NoticiaResponseDto(
-                noticia.getId(),
-                noticia.getTitulo(),
-                noticia.getDataPublicacao(),
-                noticia.getResumo(),
-                noticia.getImagemCapa(),
-                noticia.getUsuario().getNome()
-        );
+        return NoticiaMapper.toResponseDto(noticia);
     }
 
     public Page<NoticiaResponseDto> listarNoticias(Pageable pageable) {
         return noticiaRepository.findAll(pageable)
-                .map(noticia -> new NoticiaResponseDto(
-                        noticia.getId(),
-                        noticia.getTitulo(),
-                        noticia.getDataPublicacao(),
-                        noticia.getResumo(),
-                        noticia.getImagemCapa(),
-                        noticia.getUsuario().getNome()
-                ));
+                .map(NoticiaMapper::toResponseDto);
     }
 
-    public NoticiaIdResponse buscarPorId(Long id) {
+    public NoticiaSelecionadaResponse buscarPorId(Long id) {
         Noticia noticia = noticiaRepository.findById(id)
                 .orElseThrow(NoticiaNotFoundException::new);
 
-        return new NoticiaIdResponse(
-                noticia.getId(),
-                noticia.getTitulo(),
-                noticia.getDataPublicacao(),
-                noticia.getResumo(),
-                noticia.getCorpo(),
-                noticia.getImagemCapa(),
-                noticia.getUsuario().getNome()
-        );
+        return NoticiaMapper.toSelecionadaResponse(noticia);
+    }
+
+    // Auxiliares
+    private String salvarImagem(MultipartFile imagem) throws IOException {
+        String nomeImagem = UUID.randomUUID() + "_" + imagem.getOriginalFilename();
+        return supabaseStorageService.uploadFile(imagem, nomeImagem).block();
     }
 
 }

@@ -1,9 +1,12 @@
 package br.com.fiap.iNature.controller;
 
 import br.com.fiap.iNature.dto.NoticiaDto;
-import br.com.fiap.iNature.dto.response.NoticiaIdResponse;
+import br.com.fiap.iNature.dto.response.NoticiaSelecionadaResponse;
 import br.com.fiap.iNature.dto.response.NoticiaResponseDto;
 import br.com.fiap.iNature.service.NoticiaService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +23,15 @@ public class NoticiaController {
     @Autowired
     private NoticiaService noticiaService;
 
+    @Operation(
+            summary = "Criar uma nova notícia",
+            description = "Cria uma notícia com imagem e os dados fornecidos. Apenas usuários com perfil JORNALISTA têm permissão."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Notícia criada com sucesso"),
+            @ApiResponse(responseCode = "403", description = "Usuário sem permissão para criar notícia"),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida")
+    })
     @PostMapping
     public ResponseEntity<?> criar(@ModelAttribute NoticiaDto dto,
                                    @RequestHeader("Authorization") String authorizationHeader) throws IOException {
@@ -30,6 +42,13 @@ public class NoticiaController {
 
     }
 
+    @Operation(
+            summary = "Listar notícias",
+            description = "Retorna uma página de notícias ordenadas por data de publicação. (?page=0&size=10&sort=dataPublicacao,desc)"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de notícias retornada com sucesso"),
+    })
     @GetMapping
     public ResponseEntity<Page<NoticiaResponseDto>> listarNoticias(
             Pageable pageable
@@ -38,9 +57,17 @@ public class NoticiaController {
         return ResponseEntity.ok(noticias);
     }
 
+    @Operation(
+            summary = "Buscar notícia por ID",
+            description = "Retorna os detalhes completos de uma notícia com base no ID informado."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Notícia encontrada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Notícia não encontrada"),
+    })
     @GetMapping("/{id}")
-    public ResponseEntity<NoticiaIdResponse> buscarPorId(@PathVariable Long id) {
-        NoticiaIdResponse dto = noticiaService.buscarPorId(id);
+    public ResponseEntity<NoticiaSelecionadaResponse> buscarPorId(@PathVariable Long id) {
+        NoticiaSelecionadaResponse dto = noticiaService.buscarPorId(id);
         return ResponseEntity.ok(dto);
     }
 

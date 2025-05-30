@@ -1,6 +1,7 @@
 package br.com.fiap.iNature.service;
 
 import br.com.fiap.iNature.dto.Token;
+import br.com.fiap.iNature.exceptions.UsuarioNotFoundException;
 import br.com.fiap.iNature.model.Usuario;
 import br.com.fiap.iNature.model.enums.Role;
 import br.com.fiap.iNature.repository.UserRepository;
@@ -45,7 +46,7 @@ public class TokenService {
         Long userId = Long.valueOf(jwtVerified.getSubject());
 
         return usuarioRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado no banco"));
+                .orElseThrow(() -> new UsuarioNotFoundException("Usuário não encontrado no banco"));
     }
 
 

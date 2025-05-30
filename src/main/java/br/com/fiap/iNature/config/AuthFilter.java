@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 @Component
 public class AuthFilter extends OncePerRequestFilter {
@@ -49,7 +50,7 @@ public class AuthFilter extends OncePerRequestFilter {
             }
 
         } catch (Exception e) {
-            // Log, se necessário, mas não bloqueie aqui
+            Logger.getLogger(AuthFilter.class.getName()).log(java.util.logging.Level.SEVERE, null, e);
         }
 
         filterChain.doFilter(request, response);

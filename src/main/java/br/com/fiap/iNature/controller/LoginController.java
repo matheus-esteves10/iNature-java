@@ -29,13 +29,15 @@ public class LoginController {
     @Autowired
     private TokenService tokenService;
 
-    @PostMapping
+
+
     @Operation(summary = "Autenticar usuário", description = "Retorna um token JWT válido se as credenciais estiverem corretas",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Token JWT", content = @Content(mediaType = "application/json")),
                     @ApiResponse(responseCode = "401", description = "Credenciais inválidas", content = @Content(mediaType = "application/json")),
                     @ApiResponse(responseCode = "404", description = "Username não encontrado", content = @Content(mediaType = "application/json"))
             })
+    @PostMapping
     public Token login(@RequestBody @Valid Credentials credentials) {
         Usuario user = (Usuario) authService.loadUserByUsername(credentials.username());
 
