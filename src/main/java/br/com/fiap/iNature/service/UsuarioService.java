@@ -37,15 +37,15 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
-    public Usuario buscarPorId(String token) {
-        return tokenService.getUsuarioLogado(token);
+    public Usuario buscarPorId() {
+        return tokenService.getUsuarioLogado();
     }
 
 
     @Transactional
-    public Usuario atualizar(String token, UsuarioDto dto) {
+    public Usuario atualizar(UsuarioDto dto) {
 
-        Usuario usuario = tokenService.getUsuarioLogado(token);
+        Usuario usuario = tokenService.getUsuarioLogado();
         usuario.setNome(dto.nome());
         usuario.setEmail(dto.email());
         usuario.setSenha(passwordEncoder.encode(dto.senha()));
@@ -55,9 +55,9 @@ public class UsuarioService {
 
 
     @Transactional
-    public void deletar(String token) {
+    public void deletar() {
 
-        Usuario usuario = tokenService.getUsuarioLogado(token);
+        Usuario usuario = tokenService.getUsuarioLogado();
 
         usuarioRepository.deleteById(usuario.getId());
     }

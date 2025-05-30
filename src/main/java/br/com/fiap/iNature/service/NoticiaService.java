@@ -33,8 +33,8 @@ public class NoticiaService {
     private TokenService tokenService;
 
     @Transactional
-    public NoticiaResponseDto criarNoticia(String token, NoticiaDto dto) throws IOException {
-        Usuario autor = tokenService.getUsuarioLogado(token);
+    public NoticiaResponseDto criarNoticia(NoticiaDto dto) throws IOException {
+        Usuario autor = tokenService.getUsuarioLogado();
 
         if (autor.getRole() != Role.JORNALISTA) {
             throw new RoleNotPermitedException();

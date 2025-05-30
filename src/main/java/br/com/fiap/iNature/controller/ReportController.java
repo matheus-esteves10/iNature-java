@@ -38,12 +38,9 @@ public class ReportController {
     )
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping
-    public ResponseEntity<ResponseReportDto> criarReport(
-            @RequestHeader("Authorization") String token,
-            @RequestBody @Valid ReportDto dto
-    ) {
+    public ResponseEntity<ResponseReportDto> criarReport(@RequestBody @Valid ReportDto dto) {
 
-        Report report = reportService.criarReport(token, dto);
+        Report report = reportService.criarReport(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseReportDto.from(report));
     }
 
@@ -59,10 +56,9 @@ public class ReportController {
     })
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/{id}/confirmacao")
-    public ResponseEntity<?> confirmarReport(@RequestHeader("Authorization") String token,
-                                             @PathVariable("id") Long reportId) {
+    public ResponseEntity<?> confirmarReport(@PathVariable("id") Long reportId) {
 
-        reportService.confirmarReport(token, reportId);
+        reportService.confirmarReport(reportId);
         return ResponseEntity.ok().build();
 
     }
@@ -78,9 +74,8 @@ public class ReportController {
     })
     @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{id}/remocao")
-    public ResponseEntity<Void> removerConfirmacao(@RequestHeader("Authorization") String token,
-                                                   @PathVariable Long id) {
-        reportService.removerConfirmacaoReport(token, id);
+    public ResponseEntity<Void> removerConfirmacao(@PathVariable Long id) {
+        reportService.removerConfirmacaoReport(id);
         return ResponseEntity.noContent().build();
     }
 

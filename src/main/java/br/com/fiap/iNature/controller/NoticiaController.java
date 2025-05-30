@@ -35,11 +35,9 @@ public class NoticiaController {
     })
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping
-    public ResponseEntity<?> criar(@ModelAttribute NoticiaDto dto,
-                                   @RequestHeader("Authorization") String authorizationHeader) throws IOException {
+    public ResponseEntity<?> criar(@ModelAttribute NoticiaDto dto) throws IOException {
 
-        String token = authorizationHeader.replace("Bearer ", "");
-        NoticiaResponseDto response = noticiaService.criarNoticia(token, dto);
+        NoticiaResponseDto response = noticiaService.criarNoticia(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
     }

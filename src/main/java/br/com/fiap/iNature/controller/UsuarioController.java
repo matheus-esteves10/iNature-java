@@ -58,8 +58,8 @@ public class UsuarioController {
                     @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content(mediaType = "application/json"))
             })
     @GetMapping("/me")
-    public ResponseEntity<UsuarioResponseDto> buscarPorId(@RequestHeader("Authorization") String authorizationHeader) {
-        Usuario usuario = usuarioService.buscarPorId(authorizationHeader);
+    public ResponseEntity<UsuarioResponseDto> buscarPorId() {
+        Usuario usuario = usuarioService.buscarPorId();
         return ResponseEntity.ok(UsuarioResponseDto.from(usuario));
     }
 
@@ -68,10 +68,8 @@ public class UsuarioController {
                     @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso", content = @Content(mediaType = "application/json")),
                     @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content(mediaType = "application/json"))})
     @PutMapping("/me")
-    public ResponseEntity<UsuarioResponseDto> atualizarMeuPerfil(
-            @RequestHeader("Authorization") String authorizationHeader,
-            @RequestBody @Valid UsuarioDto dto) {
-        Usuario usuario = usuarioService.atualizar(authorizationHeader, dto);
+    public ResponseEntity<UsuarioResponseDto> atualizarMeuPerfil(@RequestBody @Valid UsuarioDto dto) {
+        Usuario usuario = usuarioService.atualizar(dto);
         return ResponseEntity.ok(UsuarioResponseDto.from(usuario));
     }
 
@@ -82,8 +80,8 @@ public class UsuarioController {
                     @ApiResponse(responseCode = "404", description = "Usuário nao encontrado", content = @Content(mediaType = "application/json"))
             })
     @DeleteMapping("/me")
-    public ResponseEntity<Void> deletarMeuPerfil(@RequestHeader("Authorization") String authorizationHeader) {
-        usuarioService.deletar(authorizationHeader);
+    public ResponseEntity<Void> deletarMeuPerfil() {
+        usuarioService.deletar();
         return ResponseEntity.noContent().build();
     }
 

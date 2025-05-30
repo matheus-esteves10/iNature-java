@@ -6,19 +6,21 @@ import br.com.fiap.iNature.dto.response.ResponseReportDto;
 import br.com.fiap.iNature.exceptions.ConfirmacaoNotFoundException;
 import br.com.fiap.iNature.exceptions.ReportAlreadyConfirmedException;
 import br.com.fiap.iNature.exceptions.ReportNotFoundException;
-import br.com.fiap.iNature.model.*;
+import br.com.fiap.iNature.model.ConfirmacaoReport;
+import br.com.fiap.iNature.model.ConfirmacaoReportId;
+import br.com.fiap.iNature.model.Report;
+import br.com.fiap.iNature.model.Usuario;
 import br.com.fiap.iNature.repository.ConfirmacaoRepository;
 import br.com.fiap.iNature.repository.LocalizacaoRepository;
 import br.com.fiap.iNature.repository.ReportRepository;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Optional;
 
 @Service
 public class ReportService {
@@ -36,8 +38,8 @@ public class ReportService {
     private ConfirmacaoRepository confirmacaoRepository;
 
     @Transactional
-    public Report criarReport(String token, ReportDto dto) {
-        Usuario usuario = tokenService.getUsuarioLogado(token);
+    public Report criarReport(ReportDto dto) {
+        Usuario usuario = tokenService.getUsuarioLogado();
 
         var local = ReportMapper.toLocalizacao(dto.localizacao());
 
@@ -49,8 +51,8 @@ public class ReportService {
     }
 
     @Transactional
-    public void confirmarReport(String token, Long reportId) {
-        Usuario usuario = getUsuarioLogado(token);
+    public void confirmarReport(Long reportId) {
+        Usuario usuario = tokenService.getUsuarioLogado();
         Report report = getReportOrThrow(reportId);
 
         ConfirmacaoReportId confirmacaoId = new ConfirmacaoReportId(reportId, usuario.getId());
@@ -63,8 +65,8 @@ public class ReportService {
     }
 
     @Transactional
-    public void removerConfirmacaoReport(String token, Long reportId) {
-        ConfirmacaoReportId confirmacaoId = getConfirmacaoId(token, reportId);
+    public void removerConfirmacaoReport(Long reportId) {
+        ConfirmacaoReportId confirmacaoId = getConfirmacaoId(reportId);
 
         ConfirmacaoReport confirmacao = confirmacaoRepository.findById(confirmacaoId)
                 .orElseThrow(ConfirmacaoNotFoundException::new);
@@ -103,17 +105,14 @@ public class ReportService {
         confirmacaoRepository.save(confirmacao);
     }
 
-    private Usuario getUsuarioLogado(String token) {
-        return tokenService.getUsuarioLogado(token);
-    }
 
     private Report getReportOrThrow(Long id) {
         return reportRepository.findById(id)
                 .orElseThrow(() -> new ReportNotFoundException(id));
     }
 
-    private ConfirmacaoReportId getConfirmacaoId(String token, Long reportId) {
-        Usuario usuario = getUsuarioLogado(token);
+    private ConfirmacaoReportId getConfirmacaoId(Long reportId) {
+        Usuario usuario = tokenService.getUsuarioLogado();
         return new ConfirmacaoReportId(reportId, usuario.getId());
     }
 
