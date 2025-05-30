@@ -10,7 +10,7 @@ spring.jpa.show-sql=true
 
 supabase.url=https://ljnfuslkglnglsflsqtj.supabase.co
 supabase.apikey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqbmZ1c2xrZ2xuZ2xzZmxzcXRqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0ODMwMDcwNSwiZXhwIjoyMDYzODc2NzA1fQ.PgNmEohWQPFIAfPcLW_cvWGkZtG0_Z49AJ2Irilwfws
-supabase.bucket=imagens-noticias
+supabase.bucket=<BUCKET_NAME>
 
 
 

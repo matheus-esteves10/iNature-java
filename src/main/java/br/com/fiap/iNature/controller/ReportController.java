@@ -78,12 +78,12 @@ public class ReportController {
 
     @GetMapping("/bairro")
     public ResponseEntity<Page<ResponseReportDto>> listarReportsPorBairro(
-            @RequestParam String bairro,
+            @RequestParam String nome,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<ResponseReportDto> reports = reportService.getReportsPorBairro(bairro, pageable);
+        Page<ResponseReportDto> reports = reportService.getReportsPorBairro(nome, pageable);
         return ResponseEntity.ok(reports);
     }
 

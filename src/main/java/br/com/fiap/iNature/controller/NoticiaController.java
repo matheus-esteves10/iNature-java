@@ -1,0 +1,30 @@
+package br.com.fiap.iNature.controller;
+
+import br.com.fiap.iNature.dto.NoticiaDto;
+import br.com.fiap.iNature.dto.response.NoticiaResponseDto;
+import br.com.fiap.iNature.model.Noticia;
+import br.com.fiap.iNature.service.NoticiaService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+
+@RestController
+@RequestMapping("/noticias")
+public class NoticiaController {
+
+    @Autowired
+    private NoticiaService noticiaService;
+
+    @PostMapping
+    public ResponseEntity<?> criar(@ModelAttribute NoticiaDto dto,
+                                   @RequestHeader("Authorization") String authorizationHeader) throws IOException {
+
+        String token = authorizationHeader.replace("Bearer ", "");
+        NoticiaResponseDto response = noticiaService.criarNoticia(token, dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
+    }
+}
