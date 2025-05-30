@@ -12,5 +12,6 @@ public record NoticiaResponseDto(
         String resumo,
         String imagemCapa,
         String autor
-) {}
+) {
+}
 

@@ -1,7 +1,9 @@
 package br.com.fiap.iNature.service;
 
 import br.com.fiap.iNature.dto.NoticiaDto;
+import br.com.fiap.iNature.dto.response.NoticiaIdResponse;
 import br.com.fiap.iNature.dto.response.NoticiaResponseDto;
+import br.com.fiap.iNature.exceptions.NoticiaNotFoundException;
 import br.com.fiap.iNature.exceptions.RoleNotPermitedException;
 import br.com.fiap.iNature.model.Noticia;
 import br.com.fiap.iNature.model.Usuario;
@@ -75,5 +77,19 @@ public class NoticiaService {
                 ));
     }
 
+    public NoticiaIdResponse buscarPorId(Long id) {
+        Noticia noticia = noticiaRepository.findById(id)
+                .orElseThrow(NoticiaNotFoundException::new);
+
+        return new NoticiaIdResponse(
+                noticia.getId(),
+                noticia.getTitulo(),
+                noticia.getDataPublicacao(),
+                noticia.getResumo(),
+                noticia.getCorpo(),
+                noticia.getImagemCapa(),
+                noticia.getUsuario().getNome()
+        );
+    }
 
 }

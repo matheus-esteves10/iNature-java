@@ -1,9 +1,6 @@
 package br.com.fiap.iNature.infra.exception;
 
-import br.com.fiap.iNature.exceptions.ReportAlreadyConfirmedException;
-import br.com.fiap.iNature.exceptions.ReportNotFoundException;
-import br.com.fiap.iNature.exceptions.RoleNotPermitedException;
-import br.com.fiap.iNature.exceptions.UsuarioNotFoundException;
+import br.com.fiap.iNature.exceptions.*;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -110,6 +107,15 @@ public class ValidationHandler {
     @ExceptionHandler(RoleNotPermitedException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> roleNotPermited(RoleNotPermitedException e) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", e.getClass().getSimpleName());
+        error.put("message", "Usuário sem permissão de jornalista");
+        return error;
+    }
+
+    @ExceptionHandler(NoticiaNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> noticiaNaoEcontrada(NoticiaNotFoundException e) {
         Map<String, String> error = new HashMap<>();
         error.put("error", e.getClass().getSimpleName());
         error.put("message", "Usuário sem permissão de jornalista");
