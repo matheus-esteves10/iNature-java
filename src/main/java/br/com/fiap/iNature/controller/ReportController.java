@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -35,6 +36,7 @@ public class ReportController {
                     @ApiResponse(responseCode = "401", description = "Token inválido ou ausente", content = @Content(mediaType = "application/json"))
             }
     )
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping
     public ResponseEntity<ResponseReportDto> criarReport(
             @RequestHeader("Authorization") String token,
@@ -55,6 +57,7 @@ public class ReportController {
             @ApiResponse(responseCode = "409", description = "Usuário já confirmou este report"),
             @ApiResponse(responseCode = "401", description = "Não autorizado")
     })
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/{id}/confirmacao")
     public ResponseEntity<?> confirmarReport(@RequestHeader("Authorization") String token,
                                              @PathVariable("id") Long reportId) {
@@ -73,6 +76,7 @@ public class ReportController {
             @ApiResponse(responseCode = "404", description = "Confirmação não encontrada"),
             @ApiResponse(responseCode = "401", description = "Não autorizado")
     })
+    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{id}/remocao")
     public ResponseEntity<Void> removerConfirmacao(@RequestHeader("Authorization") String token,
                                                    @PathVariable Long id) {

@@ -7,6 +7,7 @@ import br.com.fiap.iNature.service.NoticiaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +33,7 @@ public class NoticiaController {
             @ApiResponse(responseCode = "403", description = "Usuário sem permissão para criar notícia"),
             @ApiResponse(responseCode = "400", description = "Requisição inválida")
     })
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping
     public ResponseEntity<?> criar(@ModelAttribute NoticiaDto dto,
                                    @RequestHeader("Authorization") String authorizationHeader) throws IOException {
