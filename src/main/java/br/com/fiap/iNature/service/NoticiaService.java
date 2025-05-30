@@ -10,12 +10,14 @@ import br.com.fiap.iNature.repository.NoticiaRepository;
 import br.com.fiap.iNature.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.UUID;
 
 @Service
@@ -43,7 +45,7 @@ public class NoticiaService {
 
         Noticia noticia = new Noticia();
         noticia.setTitulo(dto.titulo());
-        noticia.setDataPublicacao(LocalDate.now(ZoneId.of("America/Sao_Paulo")));
+        noticia.setDataPublicacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
         noticia.setResumo(dto.resumo());
         noticia.setCorpo(dto.corpo());
         noticia.setImagemCapa(urlImagem);
@@ -60,4 +62,18 @@ public class NoticiaService {
                 noticia.getUsuario().getNome()
         );
     }
+
+    public Page<NoticiaResponseDto> listarNoticias(Pageable pageable) {
+        return noticiaRepository.findAll(pageable)
+                .map(noticia -> new NoticiaResponseDto(
+                        noticia.getId(),
+                        noticia.getTitulo(),
+                        noticia.getDataPublicacao(),
+                        noticia.getResumo(),
+                        noticia.getImagemCapa(),
+                        noticia.getUsuario().getNome()
+                ));
+    }
+
+
 }

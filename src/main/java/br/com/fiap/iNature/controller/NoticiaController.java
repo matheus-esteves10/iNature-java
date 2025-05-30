@@ -2,9 +2,12 @@ package br.com.fiap.iNature.controller;
 
 import br.com.fiap.iNature.dto.NoticiaDto;
 import br.com.fiap.iNature.dto.response.NoticiaResponseDto;
-import br.com.fiap.iNature.model.Noticia;
 import br.com.fiap.iNature.service.NoticiaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,5 +29,13 @@ public class NoticiaController {
         NoticiaResponseDto response = noticiaService.criarNoticia(token, dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<NoticiaResponseDto>> listarNoticias(
+            Pageable pageable
+    ) {
+        Page<NoticiaResponseDto> noticias = noticiaService.listarNoticias(pageable);
+        return ResponseEntity.ok(noticias);
     }
 }

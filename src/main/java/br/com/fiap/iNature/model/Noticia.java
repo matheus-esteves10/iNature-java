@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "t_ntr_noticia")
@@ -30,7 +31,7 @@ public class Noticia {
 
     @NotNull(message = "A data de publicação é obrigatória.")
     @Column(name = "dt_data_publicacao", nullable = false)
-    private LocalDate dataPublicacao;
+    private LocalDateTime dataPublicacao;
 
     @Size(max = 500, message = "O resumo deve ter no máximo 500 caracteres.")
     @Column(name = "ds_resumo")

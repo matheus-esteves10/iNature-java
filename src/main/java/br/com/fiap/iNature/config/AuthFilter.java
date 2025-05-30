@@ -25,17 +25,15 @@ public class AuthFilter extends OncePerRequestFilter {
 
         var header = request.getHeader("Authorization");
 
+        // Se não tiver header, apenas segue o fluxo (ex: endpoint público)
         if (header == null || header.isBlank()) {
-            filterChain.doFilter(request, response); // se endpoint for público, pode seguir
+            filterChain.doFilter(request, response);
             return;
         }
 
+        // Se tiver header mas não for Bearer, ignora autenticação (não lança 401)
         if (!header.startsWith("Bearer ")) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write("""
-                {"message": "Header deve iniciar com 'Bearer '"}
-            """);
+            filterChain.doFilter(request, response);
             return;
         }
 
@@ -44,28 +42,17 @@ public class AuthFilter extends OncePerRequestFilter {
         try {
             var user = tokenService.getUserFromToken(jwt);
 
-            if (user == null) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("application/json");
-                response.getWriter().write("""
-                    {"message": "Usuário não encontrado no token"}
-                """);
-                return;
+            if (user != null) {
+                var authentication = new UsernamePasswordAuthenticationToken(
+                        user, null, user.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
 
-            var authentication = new UsernamePasswordAuthenticationToken(
-                    user, null, user.getAuthorities());
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            filterChain.doFilter(request, response);
-
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write("""
-                {"message": "Token invalido ou expirado"}
-            """);
+            // Log, se necessário, mas não bloqueie aqui
         }
+
+        filterChain.doFilter(request, response);
     }
 }
 

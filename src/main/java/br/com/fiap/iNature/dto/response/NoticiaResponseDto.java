@@ -1,12 +1,16 @@
 package br.com.fiap.iNature.dto.response;
 
-import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
-public record NoticiaResponseDto(Long id,
-                                 String titulo,
-                                 LocalDate dataPublicacao,
-                                 String resumo,
-                                 String imagemCapa,
-                                 String autor
-) {
-}
+import java.time.LocalDateTime;
+
+public record NoticiaResponseDto(
+        Long id,
+        String titulo,
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
+        LocalDateTime dataPublicacao,
+        String resumo,
+        String imagemCapa,
+        String autor
+) {}
+
