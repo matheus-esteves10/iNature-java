@@ -1,6 +1,7 @@
 package br.com.fiap.iNature.service;
 
 import br.com.fiap.iNature.dto.Token;
+import br.com.fiap.iNature.exceptions.UserNotAuthException;
 import br.com.fiap.iNature.exceptions.UsuarioNotFoundException;
 import br.com.fiap.iNature.model.Usuario;
 import br.com.fiap.iNature.model.enums.Role;
@@ -56,7 +57,7 @@ public class TokenService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {
-            throw new RuntimeException("Usuário não autenticado");
+            throw new UserNotAuthException("Usuário não autenticado");
         }
 
         String email = authentication.getName();

@@ -14,11 +14,14 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.UUID;
 
@@ -55,8 +58,19 @@ public class NoticiaService {
         return NoticiaMapper.toResponseDto(noticia);
     }
 
-    public Page<NoticiaResponseDto> listarNoticias(Pageable pageable) {
-        return noticiaRepository.findAll(pageable)
+    public Page<NoticiaResponseDto> listarNoticias(LocalDate dataInicio, LocalDate dataFim, Pageable pageable) {
+        Specification<Noticia> spec = (root, query, cb) -> cb.conjunction();
+
+        if (dataInicio != null && dataFim != null) {
+            Specification<Noticia> dataSpec = (root, query, cb) -> cb.between(
+                    root.get("dataPublicacao"),
+                    dataInicio.atStartOfDay(),
+                    dataFim.atTime(LocalTime.MAX)
+            );
+            spec = spec.and(dataSpec);
+        }
+
+        return noticiaRepository.findAll(spec, pageable)
                 .map(NoticiaMapper::toResponseDto);
     }
 

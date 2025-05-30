@@ -136,4 +136,14 @@ public class ValidationHandler {
         return error;
     }
 
+    @ExceptionHandler(UserNotAuthException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Map<String, String> handleUserNotAuth(UserNotAuthException e) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Usuário não autenticado");
+        error.put("message", e.getMessage());
+        return error;
+    }
+
+
 }

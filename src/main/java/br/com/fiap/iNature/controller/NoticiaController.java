@@ -11,11 +11,13 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/noticias")
@@ -42,18 +44,20 @@ public class NoticiaController {
 
     }
 
+    @GetMapping
     @Operation(
             summary = "Listar notícias",
-            description = "Retorna uma página de notícias ordenadas por data de publicação. (?page=0&size=10&sort=dataPublicacao,desc)"
+            description = "Retorna uma página de notícias ordenadas por data de publicação. Pode ser filtrada por data (?dataInicio=2024-01-01&dataFim=2024-12-31)"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de notícias retornada com sucesso"),
     })
-    @GetMapping
     public ResponseEntity<Page<NoticiaResponseDto>> listarNoticias(
+            @RequestParam(value = "dataInicio", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
+            @RequestParam(value = "dataFim", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim,
             Pageable pageable
     ) {
-        Page<NoticiaResponseDto> noticias = noticiaService.listarNoticias(pageable);
+        Page<NoticiaResponseDto> noticias = noticiaService.listarNoticias(dataInicio, dataFim, pageable);
         return ResponseEntity.ok(noticias);
     }
 
