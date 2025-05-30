@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -37,6 +39,7 @@ public class NoticiaController {
     })
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping
+    @CacheEvict(value = "noticias", allEntries = true)
     public ResponseEntity<?> criar(@ModelAttribute NoticiaDto dto) throws IOException {
 
         NoticiaResponseDto response = noticiaService.criarNoticia(dto);
@@ -45,6 +48,7 @@ public class NoticiaController {
     }
 
     @GetMapping
+    @Cacheable(value = "noticias")
     @Operation(
             summary = "Listar notícias",
             description = "Retorna uma página de notícias ordenadas por data de publicação. Pode ser filtrada por data (?dataInicio=2024-01-01&dataFim=2024-12-31)"
