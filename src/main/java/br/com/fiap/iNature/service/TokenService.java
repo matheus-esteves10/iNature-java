@@ -8,6 +8,7 @@ import br.com.fiap.iNature.model.enums.Role;
 import br.com.fiap.iNature.repository.UserRepository;
 import com.auth0.jwt.algorithms.Algorithm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,12 +25,22 @@ import com.auth0.jwt.JWT;
 @Service
 public class TokenService {
 
-    private static final String SECRET = "secret";
+    private final Algorithm algorithm;
 
-    private final Algorithm algorithm = Algorithm.HMAC256(SECRET);
+    private final UserRepository usuarioRepository;
 
     @Autowired
-    private UserRepository usuarioRepository;
+    public TokenService(
+            @Value("${jwt.secret}") String secret,
+            UserRepository usuarioRepository
+    ) {
+        if (secret == null || secret.isBlank()) {
+            throw new IllegalArgumentException("jwt.secret não pode ser nulo ou vazio");
+        }
+
+        this.algorithm = Algorithm.HMAC256(secret);
+        this.usuarioRepository = usuarioRepository;
+    }
 
     public String createToken(Usuario user) {
         Instant expiresAt = LocalDateTime.now().plusDays(7).toInstant(ZoneOffset.ofHours(-3));
