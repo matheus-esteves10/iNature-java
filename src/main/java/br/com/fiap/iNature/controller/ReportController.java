@@ -59,7 +59,7 @@ public class ReportController {
     public ResponseEntity<?> confirmarReport(@PathVariable("id") Long reportId) {
 
         reportService.confirmarReport(reportId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
 
     }
 
