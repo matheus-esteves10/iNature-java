@@ -76,6 +76,17 @@ public class TokenService {
                 .orElseThrow(() -> new UsuarioNotFoundException("Usuário não encontrado"));
     }
 
+    public Long getIdUser(String token) {
+
+        Long id = null;
+
+        if (token != null && token.startsWith("Bearer ")) {
+            id = getUsuarioLogado().getId();
+        }
+
+        return id;
+    }
+
 
 }
 

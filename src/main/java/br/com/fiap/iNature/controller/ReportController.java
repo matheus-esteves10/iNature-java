@@ -4,6 +4,7 @@ import br.com.fiap.iNature.dto.ReportDto;
 import br.com.fiap.iNature.dto.response.ResponseReportDto;
 import br.com.fiap.iNature.model.Report;
 import br.com.fiap.iNature.service.ReportService;
+import br.com.fiap.iNature.service.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -26,6 +27,8 @@ public class ReportController {
 
     @Autowired
     private ReportService reportService;
+    @Autowired
+    private TokenService tokenService;
 
     @Operation(
             summary = "Criar novo report",
@@ -41,7 +44,7 @@ public class ReportController {
     public ResponseEntity<ResponseReportDto> criarReport(@RequestBody @Valid ReportDto dto) {
 
         Report report = reportService.criarReport(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ResponseReportDto.from(report));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ResponseReportDto.from(report, tokenService.getUsuarioLogado().getId()));
     }
 
     @Operation(
@@ -104,10 +107,11 @@ public class ReportController {
     })
     @GetMapping("/hoje")
     public ResponseEntity<Page<ResponseReportDto>> listarReportsDeHoje(@RequestParam(defaultValue = "0") int page,
-                                                                       @RequestParam(defaultValue = "12") int size) {
+                                                                       @RequestParam(defaultValue = "12") int size,
+                                                                       @RequestHeader(value = "Authorization", required = false) String token) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<ResponseReportDto> reports = reportService.getReportsDoDiaMaisConfirmados(pageable);
+        Page<ResponseReportDto> reports = reportService.getReportsDoDiaMaisConfirmados(pageable, token);
         return ResponseEntity.ok(reports);
     }
 
@@ -122,10 +126,11 @@ public class ReportController {
     public ResponseEntity<Page<ResponseReportDto>> listarReportsPorBairro(
             @RequestParam String nome,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestHeader(value = "Authorization", required = false) String token) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<ResponseReportDto> reports = reportService.getReportsPorBairro(nome, pageable);
+        Page<ResponseReportDto> reports = reportService.getReportsPorBairro(nome, pageable, token);
         return ResponseEntity.ok(reports);
     }
 

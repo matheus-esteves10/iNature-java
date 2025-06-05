@@ -14,10 +14,18 @@ public record ResponseReportDto(
         LocalDate data,
         String usuarioNome,
         LocalizacaoDto localizacao,
-        int quantidadeConfirmacoes
+        int quantidadeConfirmacoes,
+        Boolean usuarioConfirmou
 ) {
 
-    public static ResponseReportDto from(Report report) {
+    public static ResponseReportDto from(Report report, Long usuarioId) {
+        Boolean usuarioConfirmou = null;
+
+        if (usuarioId != null) {
+            usuarioConfirmou = report.getConfirmacoes().stream()
+                    .anyMatch(c -> c.getUsuario().getId().equals(usuarioId));
+        }
+
         return new ResponseReportDto(
                 report.getId(),
                 report.getTitulo(),
@@ -26,7 +34,8 @@ public record ResponseReportDto(
                 report.getData(),
                 report.getUsuario().getNome(),
                 LocalizacaoDto.from(report.getLocalizacao()),
-                report.getConfirmacoes().size()
+                report.getConfirmacoes().size(),
+                usuarioConfirmou
         );
     }
 }

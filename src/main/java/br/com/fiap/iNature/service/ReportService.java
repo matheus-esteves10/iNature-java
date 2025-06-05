@@ -82,17 +82,25 @@ public class ReportService {
         return confirmacaoRepository.countByReportId(reportId);
     }
 
-    public Page<ResponseReportDto> getReportsDoDiaMaisConfirmados(Pageable pageable) {
+
+
+
+    public Page<ResponseReportDto> getReportsPorBairro(String bairro, Pageable pageable, String token) {
+
+        Long usuarioId = tokenService.getIdUser(token);
+        Page<Report> reports = reportRepository.findByBairroContainingIgnoreCaseOrderByDataDesc(bairro, pageable);
+        return reports.map(report -> ResponseReportDto.from(report, usuarioId));
+    }
+
+
+    public Page<ResponseReportDto> getReportsDoDiaMaisConfirmados(Pageable pageable, String token) {
+
+        Long usuarioId = tokenService.getIdUser(token);
+
         LocalDate hoje = LocalDate.now(ZoneId.of("America/Sao_Paulo"));
         Page<Report> reports = reportRepository.findReportsDoDiaOrderByConfirmacoesDesc(hoje, pageable);
-        return reports.map(ResponseReportDto::from);
+        return reports.map(report -> ResponseReportDto.from(report, usuarioId));
     }
-
-    public Page<ResponseReportDto> getReportsPorBairro(String bairro, Pageable pageable) {
-        Page<Report> reports = reportRepository.findByBairroContainingIgnoreCaseOrderByDataDesc(bairro, pageable);
-        return reports.map(ResponseReportDto::from);
-    }
-
     // Auxiliares
 
     private void criaConfirmacaoReport(ConfirmacaoReportId reportId, Report report, Usuario usuario) {

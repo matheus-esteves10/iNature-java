@@ -49,7 +49,7 @@ public class ValidationHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> usuarioNotFound(UsuarioNotFoundException e) {
         Map<String, String> error = new HashMap<>();
-        error.put("error", "Operador informado não existe");
+        error.put("error", e.getClass().getSimpleName());
         error.put("message", e.getMessage());
         return error;
     }
