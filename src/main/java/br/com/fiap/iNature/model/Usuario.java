@@ -48,8 +48,10 @@ public class Usuario implements UserDetails {
     private Role role;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ConfirmacaoReport> confirmacoes = new ArrayList<>();
+    private List<Report> reports = new ArrayList<>();
 
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ConfirmacaoReport> confirmacoes = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
