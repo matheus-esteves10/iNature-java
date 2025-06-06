@@ -72,10 +72,10 @@ O **iNature** é mais do que uma solução tecnológica. É um movimento para cr
 
 Para rodar o projeto localmente ou em ambiente de testes, utilize os seguintes usuários cadastrados:
 
-| Tipo       | Email                | Senha  |
-|------------|----------------------|--------|
-| Usuário    | user@email.com       | 12345  |
-| Jornalista | jornalista@email.com  | 12345  |
+| Tipo       | Email                   |  Senha  |
+|------------|-------------------------|---------|
+| Usuário    | usuario@email.com       | 12345   |
+| Jornalista | jornalista@email.com    | testes  |
 
 ### Passos básicos:
 
@@ -86,6 +86,6 @@ Para rodar o projeto localmente ou em ambiente de testes, utilize os seguintes u
 3. Execute o backend Spring Boot
 
 **Em deploy:**
-1. Acesse a url da aplicação
+1. Acesse a url da aplicação (http://172.171.212.177:8080/swagger-ui/index.html)
 2. Realize o login e já pode realizar as operações desejadas
 
