@@ -1,0 +1,130 @@
+-- CRIACAO MAQUINA AZURE
+
+az group create -l eastus -n rg-vm-inature
+
+az vm create --resource-group rg-vm-inature --name vm-inature --image Canonical:ubuntu-24_04-lts:minimal:24.04.202505020 --size Standard_B2s --admin-username admin_inature --admin-password admin_inature@123
+
+az network nsg rule create --resource-group rg-vm-inature --nsg-name vm-inatureNSG --name port_8080 --protocol tcp --priority 1010 --destination-port-range 8080
+
+az network nsg rule create --resource-group rg-vm-inature --nsg-name vm-inatureNSG --name port_80 --protocol tcp --priority 1020 --destination-port-range 80
+
+-- CONECTANDO VIA SSH
+ssh admin_inature@IP_PUBLICO_VM
+
+-- INSTALACAO DOCKER
+sudo apt-get update
+
+sudo apt-get install ca-certificates curl
+
+sudo install -m 0755 -d /etc/apt/keyrings
+
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt-get update
+
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+-- INICIANDO CONTAINERS
+sudo docker run -d --name db -e POSTGRES_PASSWORD="password" -p 5432:5432 postgres:16.6-alpine3.21
+
+hostname -I
+
+-- Atualizar URL do DB_FIAP_URL com o ip do hostname -I
+sudo docker run --name server -d -p 8080:8080 -e DB_FIAP_URL="jdbc:postgresql://IP_LOCAL:5432/postgres" -e DB_FIAP_USERNAME="postgres" -e DB_FIAP_PASSWORD="password" -e JWT_SECRET="secret" -e SUPABASE_BUCKET_APIKEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqbmZ1c2xrZ2xuZ2xzZmxzcXRqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0ODMwMDcwNSwiZXhwIjoyMDYzODc2NzA1fQ.PgNmEohWQPFIAfPcLW_cvWGkZtG0_Z49AJ2Irilwfws" matheusesteves10/inature-server:3.2
+
+-- Mostrando as logs
+sudo docker logs db
+sudo docker logs server
+
+-- Abrindo Swagger
+http://IP_PUBLICO_VM:8080/swagger-ui/index.html
+
+-- Cadatrando Usuarios
+{
+    "nome": "Usuario Um",
+    "email": "user@gmail.com",
+    "senha": "12345"
+}
+
+{
+    "nome": "Jornalista Um",
+    "email": "jornalista@gmail.com",
+    "senha": "12345"
+}
+
+-- ALTERANDO ROLE do Jornalista Um
+sudo docker exec -it db bash
+
+psql -U postgres
+
+UPDATE t_ntr_usuario SET "nm_role" = 'JORNALISTA' WHERE "cd_id_usuario" = 2;
+COMMIT;
+
+exit;
+exit;
+
+-- Fazer login
+{
+    "email": "jornalista@gmail.com",
+    "senha": "12345"
+}
+
+-- Cadastrar Noticia logado como JORNALISTA
+POST http://IP_PUBLICO_VM:8080/noticias
+Utilizar Insomnia ou Postman**
+Body - form-data
+Campos:
+titulo - TEXT
+corpo - TEXT
+resumo - TEXT
+imagem - FILE
+
+-- ATUALIZAR USUARIO LOGADO
+PUT http://IP_PUBLICO_VM:8080/users/me
+{
+    "nome": "Jornalista Legal",
+    "email": "jornalista@gmail.com"
+}
+
+-- LOGANDO outro USUARIO
+{
+    "email": "user@gmail.com",
+    "senha": "12345"
+}
+
+-- CRIANDO PRIMEIRO REPORT
+POST http://IP_PUBLICO_VM:8080/reports
+{
+  "titulo": "Desabamento na frente de casa",
+  "corpo": "O muro caiu pos chuva e ta tudo quebrado",
+  "tipoReport": "ENCHENTE",
+  "localizacao": {
+    "cidade": "Sao Paulo",
+    "bairro": "Bairro da rua",
+    "logradouro": "Rua de tras",
+    "numero": "90"
+  }
+}
+
+-- VER QUANTAS CONFIRMACOES O REPORT CRIADO TEM
+GET http://IP_PUBLICO_VM:8080/reports/confirmacoes/1
+
+-- CONFIRMAR REPORT EXISTENTE
+POST http://IP_PUBLICO_VM:8080/reports/1/confirmacao
+
+-- LISTAR TODOS REPORTS HOJE
+GET http://IP_PUBLICO_VM:8080/reports/hoje
+
+-- REMOVER CONFIRMACAO FEITA
+DELETE http://IP_PUBLICO_VM:8080/reports/1/remocao
+
+-- DELETANDO Resource Group
+az group delete --name rg-vm-inature --yes
+
