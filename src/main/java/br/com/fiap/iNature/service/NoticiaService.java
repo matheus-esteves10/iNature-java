@@ -1,9 +1,9 @@
 package br.com.fiap.iNature.service;
 
 import br.com.fiap.iNature.dto.NoticiaDto;
-import br.com.fiap.iNature.dto.response.NoticiaSelecionadaResponse;
 import br.com.fiap.iNature.dto.response.NoticiaMapper;
 import br.com.fiap.iNature.dto.response.NoticiaResponseDto;
+import br.com.fiap.iNature.dto.response.NoticiaSelecionadaResponse;
 import br.com.fiap.iNature.exceptions.NoticiaNotFoundException;
 import br.com.fiap.iNature.exceptions.RoleNotPermitedException;
 import br.com.fiap.iNature.model.Noticia;
@@ -36,9 +36,7 @@ public class NoticiaService {
     private TokenService tokenService;
 
     @Transactional
-    public NoticiaResponseDto criarNoticia(NoticiaDto dto) throws IOException {
-        Usuario autor = tokenService.getUsuarioLogado();
-
+    public NoticiaResponseDto criarNoticia(NoticiaDto dto, Usuario autor) throws IOException {
         if (autor.getRole() != Role.JORNALISTA) {
             throw new RoleNotPermitedException();
         }

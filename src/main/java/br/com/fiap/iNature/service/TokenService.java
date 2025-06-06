@@ -1,26 +1,18 @@
 package br.com.fiap.iNature.service;
 
-import br.com.fiap.iNature.dto.Token;
-import br.com.fiap.iNature.exceptions.UserNotAuthException;
 import br.com.fiap.iNature.exceptions.UsuarioNotFoundException;
 import br.com.fiap.iNature.model.Usuario;
-import br.com.fiap.iNature.model.enums.Role;
 import br.com.fiap.iNature.repository.UserRepository;
+import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
-
-
-import com.auth0.jwt.JWT;
 
 @Service
 public class TokenService {
@@ -63,25 +55,11 @@ public class TokenService {
                 .orElseThrow(() -> new UsuarioNotFoundException("Usuário não encontrado no banco"));
     }
 
-
-    public Usuario getUsuarioLogado() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new UserNotAuthException("Usuário não autenticado");
-        }
-
-        String email = authentication.getName();
-        return usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new UsuarioNotFoundException("Usuário não encontrado"));
-    }
-
     public Long getIdUser(String token) {
-
         Long id = null;
 
-        if (token != null && token.startsWith("Bearer ")) {
-            id = getUsuarioLogado().getId();
+        if (token != null) {
+            id = getUserFromToken(token).getId();
         }
 
         return id;

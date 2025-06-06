@@ -38,9 +38,7 @@ public class ReportService {
     private ConfirmacaoRepository confirmacaoRepository;
 
     @Transactional
-    public Report criarReport(ReportDto dto) {
-        Usuario usuario = tokenService.getUsuarioLogado();
-
+    public Report criarReport(ReportDto dto, Usuario usuario) {
         var local = ReportMapper.toLocalizacao(dto.localizacao());
 
         localizacaoRepository.save(local);
@@ -51,8 +49,7 @@ public class ReportService {
     }
 
     @Transactional
-    public void confirmarReport(Long reportId) {
-        Usuario usuario = tokenService.getUsuarioLogado();
+    public void confirmarReport(Long reportId, Usuario usuario) {
         Report report = getReportOrThrow(reportId);
 
         ConfirmacaoReportId confirmacaoId = new ConfirmacaoReportId(reportId, usuario.getId());
@@ -65,8 +62,8 @@ public class ReportService {
     }
 
     @Transactional
-    public void removerConfirmacaoReport(Long reportId) {
-        ConfirmacaoReportId confirmacaoId = getConfirmacaoId(reportId);
+    public void removerConfirmacaoReport(Long reportId, Usuario usuario) {
+        ConfirmacaoReportId confirmacaoId = getConfirmacaoId(reportId, usuario.getId());
 
         ConfirmacaoReport confirmacao = confirmacaoRepository.findById(confirmacaoId)
                 .orElseThrow(ConfirmacaoNotFoundException::new);
@@ -94,9 +91,7 @@ public class ReportService {
 
 
     public Page<ResponseReportDto> getReportsDoDiaMaisConfirmados(Pageable pageable, String token) {
-
         Long usuarioId = tokenService.getIdUser(token);
-
         LocalDate hoje = LocalDate.now(ZoneId.of("America/Sao_Paulo"));
         Page<Report> reports = reportRepository.findReportsDoDiaOrderByConfirmacoesDesc(hoje, pageable);
         return reports.map(report -> ResponseReportDto.from(report, usuarioId));
@@ -119,9 +114,8 @@ public class ReportService {
                 .orElseThrow(() -> new ReportNotFoundException(id));
     }
 
-    private ConfirmacaoReportId getConfirmacaoId(Long reportId) {
-        Usuario usuario = tokenService.getUsuarioLogado();
-        return new ConfirmacaoReportId(reportId, usuario.getId());
+    private ConfirmacaoReportId getConfirmacaoId(Long reportId, Long usuarioId) {
+        return new ConfirmacaoReportId(reportId, usuarioId);
     }
 
 }

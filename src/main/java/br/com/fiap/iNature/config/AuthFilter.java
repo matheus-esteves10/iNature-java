@@ -25,7 +25,6 @@ public class AuthFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         var header = request.getHeader("Authorization");
-
         // Se não tiver header, apenas segue o fluxo (ex: endpoint público)
         if (header == null || header.isBlank()) {
             filterChain.doFilter(request, response);

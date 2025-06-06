@@ -8,11 +8,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -59,8 +59,11 @@ public class UsuarioController {
             })
     @GetMapping("/me")
     public ResponseEntity<UsuarioResponseDto> buscarPorId() {
-        Usuario usuario = usuarioService.buscarPorId();
-        return ResponseEntity.ok(UsuarioResponseDto.from(usuario));
+        return ResponseEntity.ok(
+                UsuarioResponseDto.from(
+                        (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal()
+                )
+        );
     }
 
     @Operation(summary = "Atualizar usuário logado",
@@ -69,7 +72,8 @@ public class UsuarioController {
                     @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content(mediaType = "application/json"))})
     @PutMapping("/me")
     public ResponseEntity<UsuarioResponseDto> atualizarMeuPerfil(@RequestBody @Valid UsuarioDto dto) {
-        Usuario usuario = usuarioService.atualizar(dto);
+        Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        usuario = usuarioService.atualizar(dto, usuario);
         return ResponseEntity.ok(UsuarioResponseDto.from(usuario));
     }
 
@@ -81,7 +85,8 @@ public class UsuarioController {
             })
     @DeleteMapping("/me")
     public ResponseEntity<Void> deletarMeuPerfil() {
-        usuarioService.deletar();
+        Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        usuarioService.deletar(usuario);
         return ResponseEntity.noContent().build();
     }
 

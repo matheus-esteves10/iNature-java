@@ -3,6 +3,7 @@ package br.com.fiap.iNature.controller;
 import br.com.fiap.iNature.dto.NoticiaDto;
 import br.com.fiap.iNature.dto.response.NoticiaSelecionadaResponse;
 import br.com.fiap.iNature.dto.response.NoticiaResponseDto;
+import br.com.fiap.iNature.model.Usuario;
 import br.com.fiap.iNature.service.NoticiaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -41,8 +43,8 @@ public class NoticiaController {
     @PostMapping
     @CacheEvict(value = "noticias", allEntries = true)
     public ResponseEntity<?> criar(@ModelAttribute NoticiaDto dto) throws IOException {
-
-        NoticiaResponseDto response = noticiaService.criarNoticia(dto);
+        Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        NoticiaResponseDto response = noticiaService.criarNoticia(dto, usuario);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
     }

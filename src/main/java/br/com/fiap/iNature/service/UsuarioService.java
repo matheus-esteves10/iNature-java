@@ -6,7 +6,6 @@ import br.com.fiap.iNature.model.enums.Role;
 import br.com.fiap.iNature.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -37,28 +36,19 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
-    public Usuario buscarPorId() {
-        return tokenService.getUsuarioLogado();
-    }
-
-
     @Transactional
-    public Usuario atualizar(UsuarioDto dto) {
-
-        Usuario usuario = tokenService.getUsuarioLogado();
+    public Usuario atualizar(UsuarioDto dto, Usuario usuario) {
         usuario.setNome(dto.nome());
         usuario.setEmail(dto.email());
-        usuario.setSenha(passwordEncoder.encode(dto.senha()));
-
+        if (dto.senha() != null) {
+            usuario.setSenha(passwordEncoder.encode(dto.senha()));
+        }
         return usuarioRepository.save(usuario);
     }
 
 
     @Transactional
-    public void deletar() {
-
-        Usuario usuario = tokenService.getUsuarioLogado();
-
+    public void deletar(Usuario usuario) {
         usuarioRepository.deleteById(usuario.getId());
     }
 

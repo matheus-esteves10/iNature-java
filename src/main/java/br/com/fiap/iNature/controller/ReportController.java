@@ -3,6 +3,7 @@ package br.com.fiap.iNature.controller;
 import br.com.fiap.iNature.dto.ReportDto;
 import br.com.fiap.iNature.dto.response.ResponseReportDto;
 import br.com.fiap.iNature.model.Report;
+import br.com.fiap.iNature.model.Usuario;
 import br.com.fiap.iNature.service.ReportService;
 import br.com.fiap.iNature.service.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -42,9 +44,9 @@ public class ReportController {
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping
     public ResponseEntity<ResponseReportDto> criarReport(@RequestBody @Valid ReportDto dto) {
-
-        Report report = reportService.criarReport(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ResponseReportDto.from(report, tokenService.getUsuarioLogado().getId()));
+        Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Report report = reportService.criarReport(dto, usuario);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ResponseReportDto.from(report, usuario.getId()));
     }
 
     @Operation(
@@ -59,11 +61,10 @@ public class ReportController {
     })
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/{id}/confirmacao")
-    public ResponseEntity<?> confirmarReport(@PathVariable("id") Long reportId) {
-
-        reportService.confirmarReport(reportId);
+    public ResponseEntity<Void> confirmarReport(@PathVariable("id") Long reportId) {
+        Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        reportService.confirmarReport(reportId, usuario);
         return ResponseEntity.status(HttpStatus.CREATED).build();
-
     }
 
     @Operation(
@@ -78,7 +79,8 @@ public class ReportController {
     @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{id}/remocao")
     public ResponseEntity<Void> removerConfirmacao(@PathVariable Long id) {
-        reportService.removerConfirmacaoReport(id);
+        Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        reportService.removerConfirmacaoReport(id, usuario);
         return ResponseEntity.noContent().build();
     }
 
@@ -109,7 +111,6 @@ public class ReportController {
     public ResponseEntity<Page<ResponseReportDto>> listarReportsDeHoje(@RequestParam(defaultValue = "0") int page,
                                                                        @RequestParam(defaultValue = "12") int size,
                                                                        @RequestHeader(value = "Authorization", required = false) String token) {
-
         Pageable pageable = PageRequest.of(page, size);
         Page<ResponseReportDto> reports = reportService.getReportsDoDiaMaisConfirmados(pageable, token);
         return ResponseEntity.ok(reports);

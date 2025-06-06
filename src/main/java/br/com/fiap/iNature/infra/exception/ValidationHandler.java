@@ -21,7 +21,7 @@ import java.util.Map;
 @RestControllerAdvice
 public class ValidationHandler {
 
-    record ValidationError(String field, String message) {
+    public record ValidationError(String field, String message) {
         public ValidationError(FieldError fieldError) {
             this(fieldError.getField(), fieldError.getDefaultMessage());
         }
@@ -131,8 +131,9 @@ public class ValidationHandler {
     }
     @ExceptionHandler(ReportAlreadyConfirmedException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public String reportAlreadyConfirmed(ReportAlreadyConfirmedException e) {
-        String error = "error: O usuário informado ja confirmou o report";
+    public Map<String, String> reportAlreadyConfirmed(ReportAlreadyConfirmedException e) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "O usuário informado ja confirmou o report");
         return error;
     }
 
@@ -144,6 +145,4 @@ public class ValidationHandler {
         error.put("message", e.getMessage());
         return error;
     }
-
-
 }
