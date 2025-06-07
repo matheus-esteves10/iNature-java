@@ -29,6 +29,13 @@ Tudo isso em um só lugar, com foco em **prevenção, conscientização e engaja
 
 ---
 
+## 🎥 Vídeos do Projeto
+
+- 📽️ **Vídeo Pitch**: [https://youtu.be/rXU8a9Xs7Gc](https://youtu.be/rXU8a9Xs7Gc)  
+- 💻 **Demonstração da Solução**: [https://youtu.be/4VfwhNpG6uU](https://youtu.be/4VfwhNpG6uU)
+
+---
+
 ## 🧑‍🤝‍🧑 Público-Alvo
 
 Nosso público inclui:
@@ -49,9 +56,9 @@ Nosso público inclui:
 - **Frontend:** Aplicação em React Native  
 - **Banco de Dados:** Relacional, com registro de ocorrências, usuários e notícias  
 - **APIs externas:** para previsão de enchentes e dados climáticos  
-- **Armazenamento:** Supabase Storage para imagens e conteúdos
+- **Armazenamento:** Supabase Storage para imagens e conteúdos  
 - **Deploy:** Máquina virtual da Azure
-- 
+
 ---
 
 ## ✅ Impacto Esperado
@@ -68,11 +75,13 @@ O **iNature** é mais do que uma solução tecnológica. É um movimento para cr
 
 > 🌱 Grandes ideias nascem dos grandes desafios. E com o iNature, damos um passo real rumo a um futuro mais consciente e sustentável.
 
+---
+
 ## 🏁 Como Rodar o Projeto
 
 Para rodar o projeto localmente ou em ambiente de testes, utilize os seguintes usuários cadastrados:
 
-| Tipo       | Email                   |  Senha  |
+| Tipo       | Email                   | Senha   |
 |------------|-------------------------|---------|
 | Usuário    | usuario@email.com       | 12345   |
 | Jornalista | jornalista@email.com    | testes  |
@@ -86,6 +95,6 @@ Para rodar o projeto localmente ou em ambiente de testes, utilize os seguintes u
 3. Execute o backend Spring Boot
 
 **Em deploy:**
-1. Acesse a url da aplicação (http://172.171.212.177:8080/swagger-ui/index.html)
-2. Realize o login e já pode realizar as operações desejadas
 
+1. Acesse a URL da aplicação: [http://172.171.212.177:8080/swagger-ui/index.html](http://172.171.212.177:8080/swagger-ui/index.html)  
+2. Realize o login e já pode realizar as operações desejadas
